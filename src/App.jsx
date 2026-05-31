@@ -241,7 +241,7 @@ function Home({ streak, entries, setView, setSelected }) {
     </div>
   );
 }
-functfunction Ritual({ onSave, setView }) {
+function Ritual({ onSave, setView }) {
   const [step, setStep]       = useState(0);
   const [livro, setLivro]     = useState("");
   const [autor, setAutor]     = useState("");

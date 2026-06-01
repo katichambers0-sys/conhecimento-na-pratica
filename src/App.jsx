@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 
 const C = {
-  bg:       "#0E0C0A",
-  surface:  "#151210",
-  card:     "#1C1815",
-  border:   "#2C2520",
-  borderHi: "#3D342C",
-  gold:     "#C8A96D",
-  goldDim:  "#8A7048",
-  blush:    "#C4786E",
-  cream:    "#EDE4D3",
-  muted:    "#7A7068",
-  mutedHi:  "#9A8E82",
-  text:     "#D8CFBE",
-  ink:      "#F2EAD8",
-  success:  "#7A9E7E",
+  bg:       "#F2EDE8",
+  surface:  "#EDE7E1",
+  card:     "#E8E1DA",
+  border:   "#D4C9BF",
+  borderHi: "#8B6355",
+  gold:     "#5C1F2E",
+  goldDim:  "#8B6355",
+  blush:    "#7B3545",
+  cream:    "#2C1810",
+  muted:    "#9A8880",
+  mutedHi:  "#6B5248",
+  text:     "#3D2418",
+  ink:      "#2C1810",
+  success:  "#4A6741",
 };
 
 const PROMPTS = {
@@ -151,7 +151,18 @@ lentes para guiar sua leitura (use com leveza):
 
 cinco campos:
 
-"ancora": frase essencial. máximo 18 palavras. citável, memorável, com alguma inteligência ou leveza. nascida do que foi escrito. sem travessão.
+"ancora": a frase essencial deste ritual. máximo 18 palavras.
+
+voz: adulta, madura, gentil, presente. inspirada em ana suy (profundidade psicanalítica com leveza, a frase que abre uma janela sem empurrar ninguém), ana holanda (calor, o cotidiano como portal para o profundo, intimidade sem sentimentalismo) e revista vida simples (frases que respiram, sabedoria sem grandilosidade, o simples que é verdadeiro).
+
+regras específicas para esta frase:
+1. deve conter pelo menos uma palavra, ideia ou imagem retirada diretamente do que a pessoa escreveu neste ritual. não de qualquer leitura, mas desta especificamente.
+2. teste de unicidade obrigatório: se você cobrir o nome do livro, a frase ainda precisa ser reconhecível como nascida deste ritual, não de qualquer outro. se não passar nesse teste, reescreva.
+3. deve evocar uma destas três sensações, a que emergir mais naturalmente: reconhecimento ("é exatamente isso"), pertencimento ("não estou sozinha nisso") ou expansão ("nunca tinha pensado assim"). escolha uma só.
+4. nunca use frases motivacionais genéricas, metáforas de calendário ou sabedoria de poster. isso não é a nossa voz.
+5. use os frameworks com leveza: psicologia narrativa (a pessoa como autora), psicanálise leve (o que está por trás), pensamento sistémico (padrão maior), ética do cuidado (conexão com o outro).
+6. pode ter leveza ou humor suave quando o tema permitir. às vezes a frase mais poderosa é direta e simples.
+7. sem travessão.
 
 "espelho": 2 a 3 frases. comece pelo que a pessoa disse. use "me parece que", "isso sugere que", "me corrija se eu estiver errada". nunca projete emoções que não foram nomeadas. sem travessão.
 
@@ -534,27 +545,27 @@ function Home({ streak, entries, setView, setSelected, nomeDisplay, mostrarRefle
         </div>
       </div>
 
-      {mostrarResumoMensal && (
-        <div onClick={() => setView("mensal")} style={{ background: `${C.blush}15`, border: `1px solid ${C.blush}44`, borderRadius: "6px", padding: "16px 20px", marginBottom: "12px", cursor: "pointer" }}>
-          <p style={{ fontSize: "10px", letterSpacing: "0.2em", color: C.blush, textTransform: "uppercase", margin: "0 0 4px" }}>resumo do mês</p>
-          <p style={{ fontSize: "14px", fontFamily: "'Cormorant Garamond', Georgia, serif", color: C.cream, margin: 0 }}>seu {getMesNome(mesPassado)} em leituras está pronto</p>
-        </div>
-      )}
-
-      {mostrarReflexaoSemanal && (
-        <div onClick={() => setView("semanal")} style={{ background: `${C.gold}15`, border: `1px solid ${C.gold}44`, borderRadius: "6px", padding: "16px 20px", marginBottom: "12px", cursor: "pointer" }}>
-          <p style={{ fontSize: "10px", letterSpacing: "0.2em", color: C.goldDim, textTransform: "uppercase", margin: "0 0 4px" }}>novo</p>
-          <p style={{ fontSize: "14px", fontFamily: "'Cormorant Garamond', Georgia, serif", color: C.cream, margin: 0 }}>sua reflexão da semana está pronta</p>
-        </div>
-      )}
-
-      <Btn onClick={() => setView("ritual")} style={{ marginBottom: "12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <Btn onClick={() => setView("ritual")} style={{ marginBottom: "20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <span style={{ textAlign: "left" }}>
           <span style={{ display: "block", fontSize: "10px", letterSpacing: "0.2em", color: C.goldDim, textTransform: "uppercase", marginBottom: "3px" }}>iniciar</span>
           <span style={{ display: "block", fontSize: "17px", fontFamily: "'Cormorant Garamond', Georgia, serif", color: C.cream }}>ritual de leitura</span>
         </span>
         <span style={{ fontSize: "18px", color: C.gold }}>→</span>
       </Btn>
+
+      {mostrarResumoMensal && (
+        <div onClick={() => setView("mensal")} style={{ background: `${C.blush}18`, border: `1px solid ${C.blush}55`, borderRadius: "6px", padding: "16px 20px", marginBottom: "12px", cursor: "pointer" }}>
+          <p style={{ fontSize: "10px", letterSpacing: "0.2em", color: C.blush, textTransform: "uppercase", margin: "0 0 4px" }}>resumo do mês</p>
+          <p style={{ fontSize: "14px", fontFamily: "'Cormorant Garamond', Georgia, serif", color: C.cream, margin: 0 }}>seu {getMesNome(mesPassado)} em leituras está pronto</p>
+        </div>
+      )}
+
+      {mostrarReflexaoSemanal && (
+        <div onClick={() => setView("semanal")} style={{ background: `${C.gold}18`, border: `1px solid ${C.gold}55`, borderRadius: "6px", padding: "16px 20px", marginBottom: "12px", cursor: "pointer" }}>
+          <p style={{ fontSize: "10px", letterSpacing: "0.2em", color: C.goldDim, textTransform: "uppercase", margin: "0 0 4px" }}>novo</p>
+          <p style={{ fontSize: "14px", fontFamily: "'Cormorant Garamond', Georgia, serif", color: C.cream, margin: 0 }}>sua reflexão da semana está pronta</p>
+        </div>
+      )}
 
       <button onClick={() => setView("biblioteca")} style={{ width: "100%", padding: "14px 20px", background: "transparent", border: `1px solid ${C.border}`, borderRadius: "6px", cursor: "pointer", color: C.mutedHi, fontSize: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "36px" }}
         onMouseEnter={e => e.currentTarget.style.borderColor = C.borderHi}

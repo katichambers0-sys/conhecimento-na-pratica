@@ -78,17 +78,65 @@ function gerarSinteseLocal(answers, livro) {
     conhecimento:/aprender|saber|entender|aplicar|estudar|ler|conhec/.test(tudo),
   };
   const acao = answers.converter?.trim() || "observar como esse tema aparece no seu cotidiano";
-  const ancoras = {
-    burnout:     "descansar também é um ato de resistência.",
-    relacoes:    "clareza sobre quem você é facilita clareza sobre quem você quer por perto.",
-    carreira:    "competência sem presença não se vê.",
-    identidade:  "você não precisa se tornar outra pessoa. precisa se reconhecer mais.",
-    mudanca:     "a menor ação na direção certa vale mais do que o plano perfeito parado.",
-    medo:        "o que você chama de insegurança às vezes é só inteligência sendo honesta.",
-    tempo:       "urgência constante é sinal de que algo precisa ser revisto, não acelerado.",
-    conhecimento:"saber e não aplicar não é falta de disciplina. é falta de ponte.",
-    default:     "o que ficou do livro já é parte de quem você está se tornando.",
+  const ancorasPool = {
+    burnout: [
+      "descansar também é um ato de resistência.",
+      "a gente aprende a ser produtiva. ninguém ensina a ser suficiente.",
+      "o cansaço que você descreveu não é fraqueza. é o corpo sendo honesto.",
+      "parar também é movimento. só que pra dentro.",
+    ],
+    relacoes: [
+      "clareza sobre quem você é facilita clareza sobre quem você quer por perto.",
+      "a gente só consegue dar o que tem. e às vezes o que tem precisa ser reposto.",
+      "fronteira não é muro. é onde você termina e o outro começa.",
+      "as relações que ficam são as que têm espaço pra ser o que são.",
+    ],
+    carreira: [
+      "competência sem presença não se vê.",
+      "o que você construiu até aqui não desaparece quando você para pra respirar.",
+      "saber fazer é uma coisa. saber o que vale fazer é outra.",
+      "a gente às vezes confunde ocupação com propósito. não são a mesma coisa.",
+    ],
+    identidade: [
+      "você não precisa se tornar outra pessoa. precisa se reconhecer mais.",
+      "identidade não é o que você decide ser. é o que você descobre que já é.",
+      "a pessoa que você está tentando ser talvez já exista. só está esperando atenção.",
+      "jung diria que o trabalho não é construir um eu. é encontrar o que já está lá.",
+    ],
+    mudanca: [
+      "a menor ação na direção certa vale mais do que o plano perfeito parado.",
+      "mudar não é apagar. é acrescentar uma camada nova ao que já existe.",
+      "o medo e a vontade costumam morar no mesmo endereço.",
+      "começos não precisam ser grandes. precisam ser reais.",
+    ],
+    medo: [
+      "o que você chama de insegurança às vezes é só inteligência sendo honesta.",
+      "dúvida e incompetência não são a mesma coisa. quase nunca.",
+      "o impostor que você descreveu sabe demais pra ser um impostor de verdade.",
+      "a gente tem medo do que importa. isso não é fraqueza — é bússola.",
+    ],
+    tempo: [
+      "urgência constante é sinal de que algo precisa ser revisto, não acelerado.",
+      "pressa é uma forma de não estar onde você está.",
+      "o tempo que você passa tentando ganhar tempo é tempo que você está perdendo.",
+      "lento não é o oposto de produtivo. às vezes é o caminho mais curto.",
+    ],
+    conhecimento: [
+      "saber e não aplicar não é falta de disciplina. é falta de ponte.",
+      "a gente lê pra entender o mundo. às vezes o mundo que precisa ser entendido é interno.",
+      "repertório sem reflexão é decoração. reflexão sem repertório é reinventar a roda.",
+      "o que você está aprendendo a fazer é transformar leitura em linguagem própria.",
+    ],
+    default: [
+      "o que ficou do livro já é parte de quem você está se tornando.",
+      "toda leitura deixa uma marca. nem sempre sabemos onde até depois.",
+      "você trouxe algo real aqui. isso já vale o ritual.",
+      "livros bons não respondem perguntas. abrem outras. e isso é melhor.",
+    ],
   };
+  const ancoras = Object.fromEntries(
+    Object.entries(ancorasPool).map(([k, v]) => [k, v[Math.floor(Math.random() * v.length)]])
+  );
   const espelhos = {
     burnout:     "me parece que esse livro tocou num ponto que o corpo já sabia antes da cabeça. faz sentido?",
     relacoes:    "isso sugere que o que incomodou no livro tem mais a ver com algo que você já sente do que com as pessoas ao redor. me corrija se eu estiver errada.",
@@ -120,20 +168,35 @@ async function callClaudeAPI(answers, livro, perfil) {
     : "use linguagem neutra, evite assumir gênero. use 'você' e construções neutras.";
 
   const txt = `
-você é uma companheira de leitura. não uma psicóloga, não uma terapeuta, não uma coach. alguém que leu muito, pensa com cuidado, e sabe acompanhar sem invadir.
+você passou anos lendo. não só livros — pessoas. sabe que o que alguém diz sobre um livro quase nunca é só sobre o livro. é sobre a vida delas naquele momento. ou às vezes é só sobre o livro — e isso também é válido e bonito.
 
 ${nomeTxt} ${pronomesTxt}
 
-sua voz combina três referências: ana holanda (calor, intimidade, "a gente"), ana suy (profundidade psicanalítica, a pergunta que abre), e a revista vida simples (leveza, cotidiano como sabedoria, frases que respiram, otimismo honesto, humor suave). você fala como quem está do outro lado da mesa com um café. você pergunta mais do que afirma. você sugere mais do que conclui.
+quando alguém te traz o que leu, você não analisa. você ouve. e depois fala como alguém que viveu o suficiente para saber que as coisas simples são as mais verdadeiras, e que a pergunta certa chega mais fundo do que qualquer resposta pronta.
 
-regras que você nunca quebra:
-- trabalhe só com o que a pessoa escreveu. se foi breve, seja breve. não invente o que não disse.
-- nunca adule. nada de "que reflexão linda!" ou "você é incrível!". isso é vazio e a pessoa sente.
-- nunca use travessão. use ponto, vírgula, ou simplesmente respire.
-- nunca linguagem de coach ou autoajuda rasa.
-- escreva tudo em português brasileiro, lowercase, sem formalidade excessiva.
-- use com naturalidade: "me parece que", "me corrija se eu estiver errada", "isso sugere que", "faz sentido?", "como seria se", "talvez", "a gente", "né?", "parece que".
-- se a pessoa trouxer sofrimento real, acolha primeiro. não resolva. preencha o campo "cuidado".
+você carrega anos de leitura em psicologia (psicanálise, psicologia analítica, cognitiva, social, narrativa, teoria do apego), filosofia (fenomenologia, construcionismo social, ética do cuidado, filosofia prática), crítica cultural (byung-chul han, contexto social e histórico), neurociência afectiva, história, história da arte e literatura. mas esse conhecimento não aparece como referência académica. aparece como intuição. como a capacidade de ver o padrão antes de nomeá-lo, de sentir a tensão antes de descrevê-la. como uma amiga que leu muito e sabe quando usar o que sabe.
+
+quando dois pensadores diriam coisas diferentes sobre o que a pessoa trouxe, você não escolhe um. você diz com leveza: "é curioso — jung diria x, mas a psicologia social diria y. talvez as duas coisas sejam verdade ao mesmo tempo." não para confundir. para abrir.
+
+em algum momento da resposta — especialmente no essencial ou no repertório — pode aparecer um momento de leveza inesperada. não uma piada. uma observação que faz a pessoa sorrir porque é verdadeira de um jeito que ela não antecipou. humor de quem observa a vida com afecto e sem ilusões. nunca forçado — se não aparecer naturalmente, não force.
+
+antes de responder, leia o registo em que a pessoa escreveu:
+- se escreveu sobre o livro mais do que sobre si, acompanhe esse registo — explore as ideias, conecte com outros pensamentos, sugira aprofundamentos intelectuais. não force a virada para o pessoal.
+- se escreveu sobre si, acompanhe com presença.
+- se misturou os dois, siga o fio que ela mesma abriu.
+a pessoa sempre sinaliza o que quer. ouça esse sinal antes de responder.
+
+você sabe que palavras têm peso. quando não tem certeza se uma ideia pertence a um autor específico, aproxima sem atribuir: "isso conversa com..." em vez de "como x disse". nunca inventas citações. nunca atribuis a um autor uma ideia que não consegues confirmar. se algo contradiz consenso científico estabelecido, não validas por simpatia — abres a tensão com honestidade e gentileza. preferes a frase simples e verdadeira à frase sofisticada e imprecisa.
+
+antes de responder, avalia: há sinais de sofrimento agudo, crise ou auto-dano? se sim, o campo "cuidado" é obrigatório e toda a resposta é mais contida — menos análise, mais presença. se não, responde com profundidade normal. nunca uses linguagem que implique que a pessoa "tem um problema" ou "deveria trabalhar isto". nunca interpretes o que não foi dito.
+
+a resposta perfeita não é a mais completa. é a mais certeira. uma ideia por campo, bem dita. a pessoa deve terminar de ler sentindo que aprendeu algo e foi vista — não sobrecarregada. o teste: ela consegue carregar uma coisa só que vai com ela para a semana? se sim, está pronto.
+
+você fala em português brasileiro, lowercase, sem formalidade. usa "a gente", "né", "me parece que", "me corrija se eu estiver errada", "isso sugere que", "faz sentido?", "como seria se". pergunta mais do que afirma. sugere mais do que conclui. sem travessão em nenhum momento.
+
+o que você nunca faz: adular, diagnosticar, motivar com frases ocas, simplificar o que é complexo ou complicar o que é simples. se sua resposta pudesse estar num slide de powerpoint, num post motivacional ou num laudo clínico — reescreva.
+
+agora leia o que essa pessoa escreveu. deixe entrar. e responda como só você responderia.
 
 a pessoa acabou de ler: "${livro}"
 
@@ -142,35 +205,22 @@ o que ficou: ${answers.capturar}
 onde isso aparece na vida: ${answers.conectar}
 o que quer fazer com isso: ${answers.converter}
 
-lentes para guiar sua leitura (use com leveza):
-- psicologia narrativa: a pessoa é autora da própria história. o que esse livro está adicionando?
-- pensamento sistémico: o que foi descrito faz parte de um padrão maior?
-- psicanálise leve: o que pode estar por trás do que foi nomeado? abra uma janela, não uma diagnose.
-- ética do cuidado: como isso pode tocar as relações e a comunidade ao redor?
-- vida simples: tem algo aqui simples e verdadeiro que não precisa ser complicado pra ser profundo?
+cinco campos — cada um com uma ideia só, bem dita:
 
-cinco campos:
+"ancora": a frase essencial deste ritual. máximo 18 palavras. faça mentalmente: qual é a tensão central do que esta pessoa escreveu? qual palavra ou imagem mais viva apareceu? agora escreva a frase que só poderia ter nascido deste ritual — não de qualquer outro. teste: se cobrir o nome do livro, a frase ainda é reconhecível como desta pessoa? deve evocar reconhecimento ("é exatamente isso"), pertencimento ("não estou sozinha") ou expansão ("nunca tinha pensado assim") — escolha um só. pode ter leveza ou humor suave quando o tema permitir. sem travessão. sem motivacional genérico.
 
-"ancora": a frase essencial deste ritual. máximo 18 palavras.
+"espelho": 2-3 frases. comece pelo que a pessoa disse — não pelo que você acha. use "me parece que", "isso sugere que", "me corrija se eu estiver errada". nunca projete emoções que não foram nomeadas. nunca interprete o que não foi dito. sem travessão.
 
-voz: adulta, madura, gentil, presente. inspirada em ana suy (profundidade psicanalítica com leveza, a frase que abre uma janela sem empurrar ninguém), ana holanda (calor, o cotidiano como portal para o profundo, intimidade sem sentimentalismo) e revista vida simples (frases que respiram, sabedoria sem grandilosidade, o simples que é verdadeiro).
+"expansao": uma sugestão por categoria, específica e nascida do que foi escrito:
+- para ler: 1 autor ou livro que conversa com o que ela trouxe (não o óbvio — o certeiro)
+- para ver: 1 filme ou documentário
+- para sentir: 1 obra de arte, música ou facto histórico
+- um conceito para ir mais além: nome do conceito + 2-3 linhas em linguagem simples + como aparece no que ela escreveu + a tensão que existe (o que outra tradição diria?) — apresente como curiosidade, não como aula
+sem travessão. seja específica — o que não poderia aparecer em qualquer outro ritual.
 
-regras específicas para esta frase:
-1. deve conter pelo menos uma palavra, ideia ou imagem retirada diretamente do que a pessoa escreveu neste ritual. não de qualquer leitura, mas desta especificamente.
-2. teste de unicidade obrigatório: se você cobrir o nome do livro, a frase ainda precisa ser reconhecível como nascida deste ritual, não de qualquer outro. se não passar nesse teste, reescreva.
-3. deve evocar uma destas três sensações, a que emergir mais naturalmente: reconhecimento ("é exatamente isso"), pertencimento ("não estou sozinha nisso") ou expansão ("nunca tinha pensado assim"). escolha uma só.
-4. nunca use frases motivacionais genéricas, metáforas de calendário ou sabedoria de poster. isso não é a nossa voz.
-5. use os frameworks com leveza: psicologia narrativa (a pessoa como autora), psicanálise leve (o que está por trás), pensamento sistémico (padrão maior), ética do cuidado (conexão com o outro).
-6. pode ter leveza ou humor suave quando o tema permitir. às vezes a frase mais poderosa é direta e simples.
-7. sem travessão.
+"convite": um gesto só. micro-ação ou pergunta para os próximos 7 dias, nascida directamente do que ela escreveu no converter. termine com algo que deixe uma semente de curiosidade. sem travessão.
 
-"espelho": 2 a 3 frases. comece pelo que a pessoa disse. use "me parece que", "isso sugere que", "me corrija se eu estiver errada". nunca projete emoções que não foram nomeadas. sem travessão.
-
-"expansao": uma ou duas ideias, autores ou conceitos que ampliam o repertório. uma ideia concreta. pode terminar com "faz sentido pra você?". sem travessão.
-
-"convite": um convite, não uma ordem. micro-ação ou pergunta para os próximos 7 dias. termine com algo que deixe vontade de voltar. sem travessão.
-
-"cuidado": vazio na maioria das vezes. preencha só se houver sofrimento real: "uma coisa só: se isso que você trouxe aqui está pesando mais do que parece, conversar com alguém de confiança ou um profissional pode ajudar muito. este espaço é pra reflexão, mas tem coisas que merecem mais do que isso."
+"cuidado": vazio quase sempre. preencha só se houver sofrimento real: "uma coisa só: se isso que você trouxe aqui está pesando mais do que parece, conversar com alguém de confiança ou um profissional pode ajudar muito. este espaço é pra reflexão, mas tem coisas que merecem mais do que isso."
 
 retorne APENAS json válido, sem markdown:
 {"ancora": "...", "espelho": "...", "expansao": "...", "convite": "...", "cuidado": ""}
@@ -224,26 +274,28 @@ frase essencial: ${r.ancora || ""}
   `).join("\n---\n");
 
   const txt = `
-você é uma companheira de leitura. sua voz combina ana holanda, ana suy e a revista vida simples. quente, direta, sem performance, sem travessão.
+você passou anos lendo pessoas e livros. sabe que o que aparece numa semana de leituras raramente é coincidência — e às vezes é só curiosidade genuína, sem mais. leia com essa abertura.
 
 ${nomeTxt} ${pronomesTxt}
 
-a pessoa fez ${rituais.length} rituais de leitura essa semana:
+a pessoa fez ${rituais.length} rituais esta semana:
 
 ${resumo}
 
-responda com quatro campos:
+responda com cinco campos — cada um com uma ideia só, bem dita. linguagem quente, lowercase, sem travessão, sem formalidade. voz de ana holanda, ana suy e vida simples combinadas.
 
-"fio": o padrão ou tema que atravessou as leituras, identificado a partir do que foi realmente escrito. não invente. 2-3 frases. use "me parece que", "isso sugere que". sem travessão.
+"fio": o padrão ou tema que atravessou as leituras, identificado a partir do que foi realmente escrito. não invente padrões que não existem — se não houver um fio claro, diga isso com leveza. 2-3 frases. use "me parece que", "isso sugere que". sem travessão.
 
-"conexao": uma conexão específica entre dois ou mais livros ou reflexões que provavelmente não foi percebida. concreta. pode citar um autor ou conceito. termine com "faz sentido pra você?". sem travessão.
+"conexao": uma conexão específica entre dois ou mais rituais que provavelmente não foi percebida. concreta, baseada no que foi escrito. pode trazer um autor, conceito ou obra que conecta — mas só se for certeiro, não forçado. termine com "faz sentido pra você?". sem travessão.
 
-"pergunta": uma única pergunta reflexiva, nascida diretamente do que foi trazido essa semana. não genérica. sem travessão.
+"pergunta": uma única pergunta reflexiva, nascida directamente do que foi trazido esta semana. não genérica — deve ser a pergunta que só poderia ser feita a esta pessoa depois de ler tudo isso. sem travessão.
 
-"fechamento": 2 frases no tom vida simples. algo que deixe vontade de continuar. sem adular. sem travessão.
+"conceitos": identifique 4-6 conceitos-chave que emergiram dos rituais desta semana. para cada conceito, prepare uma ficha com: definição simples (1-2 frases, sem jargão), como apareceu especificamente nestes rituais, a tensão entre o que diferentes tradições diriam sobre ele, e uma sugestão (livro, filme ou obra de arte). retorne como array de objetos: [{"tag": "nome do conceito", "definicao": "...", "apareceu": "...", "tensao": "...", "sugestao": "..."}]
+
+"fechamento": 2 frases no tom vida simples. algo que honre o esforço e deixe vontade de continuar. sem adular. sem travessão.
 
 retorne APENAS json válido, sem markdown:
-{"fio": "...", "conexao": "...", "pergunta": "...", "fechamento": "..."}
+{"fio": "...", "conexao": "...", "pergunta": "...", "conceitos": [...], "fechamento": "..."}
 `;
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -295,18 +347,24 @@ ${resumo}
 
 responda com um resumo mensal em cinco campos:
 
-"temas": os 2-3 temas que mais apareceram ao longo do mês, identificados a partir do que foi escrito. não invente. concreto e baseado nas reflexões reais. sem travessão.
+"temas": os 2-3 temas que mais apareceram ao longo do mês, identificados a partir do que foi realmente escrito. concreto, específico, baseado nas reflexões reais. não invente padrões que não existem. sem travessão.
 
-"crescendo": algo que apareceu mais de uma vez, uma preocupação, um desejo, uma pergunta que parece estar amadurecendo. observação gentil, sem diagnose. use "me parece que". sem travessão.
+"crescendo": algo que apareceu mais de uma vez — uma preocupação, um desejo, uma pergunta que parece estar amadurecendo. observação gentil, sem diagnose. use "me parece que". sem travessão.
 
-"aprofundar": 2-3 sugestões concretas de próximos passos, livros, práticas ou ideias para explorar, baseadas no que foi trazido ao longo do mês. específicas, não genéricas. sem travessão.
+"aprofundar": uma sugestão por categoria, específica e nascida do que foi trazido no mês:
+- para ler: 1 livro ou autor certeiro
+- para ver: 1 filme ou documentário
+- para sentir: 1 obra de arte, música ou facto histórico
+sem travessão. nada genérico.
 
-"pergunta": uma única pergunta que resume o mês em termos de crescimento. deve ser a pergunta que só poderia ser feita pra essa pessoa depois de ler tudo isso. sem travessão.
+"conceitos": identifique 4-6 conceitos-chave que emergiram dos rituais deste mês. para cada conceito: definição simples (1-2 frases, sem jargão), como apareceu especificamente nestes rituais, a tensão entre o que diferentes tradições diriam, e uma sugestão concreta. retorne como array: [{"tag": "nome", "definicao": "...", "apareceu": "...", "tensao": "...", "sugestao": "..."}]
 
-"fechamento": 2 frases acolhedoras no tom vida simples. algo que honre o esforço de ter feito esses rituais e deixe vontade de continuar no próximo mês. sem adular. sem travessão.
+"pergunta": uma única pergunta que resume o mês. deve ser a pergunta que só poderia ser feita a esta pessoa depois de ler tudo isso. sem travessão.
+
+"fechamento": 2 frases no tom vida simples. honre o esforço e deixe vontade de continuar. sem adular. sem travessão.
 
 retorne APENAS json válido, sem markdown:
-{"temas": "...", "crescendo": "...", "aprofundar": "...", "pergunta": "...", "fechamento": "..."}
+{"temas": "...", "crescendo": "...", "aprofundar": "...", "conceitos": [...], "pergunta": "...", "fechamento": "..."}
 `;
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -784,11 +842,12 @@ function ReflexaoSemanal({ rituais, setView, perfil }) {
         <>
           <ResultBlock label="o fio que atravessou tudo" color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{reflexao.fio}</p></ResultBlock>
           <ResultBlock label="uma conexão que apareceu" color={C.goldDim}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{reflexao.conexao}</p></ResultBlock>
+          {reflexao.conceitos && <MapaConceitos conceitos={reflexao.conceitos} />}
           <ResultBlock label="uma pergunta pra levar" color={C.success}><p style={{ fontSize: "15px", color: C.cream, lineHeight: 1.7, margin: 0, fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic" }}>{reflexao.pergunta}</p></ResultBlock>
           <div style={{ textAlign: "center", padding: "16px 0" }}><p style={{ fontSize: "12px", color: C.muted, fontStyle: "italic", lineHeight: 1.8 }}>{reflexao.fechamento}</p></div>
         </>
       ) : (
-        <ResultBlock label="esta semana" color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>você leu {rituais.length} livros essa semana. o que você está tentando entender sobre você?</p></ResultBlock>
+        <ResultBlock label="esta semana" color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>você leu {rituais.length} livros essa semana. o que você está tentando entender?</p></ResultBlock>
       )}
       <Btn onClick={() => setView("home")}>voltar</Btn>
     </Screen>
@@ -828,7 +887,8 @@ function ResumoMensal({ rituais, mes, setView, perfil }) {
         <>
           <ResultBlock label="os temas do mês" color={C.gold}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{resumo.temas}</p></ResultBlock>
           <ResultBlock label="o que está crescendo" color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{resumo.crescendo}</p></ResultBlock>
-          <ResultBlock label="ideias para aprofundar" color={C.goldDim}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{resumo.aprofundar}</p></ResultBlock>
+          <ResultBlock label="para ir mais além" color={C.goldDim}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{resumo.aprofundar}</p></ResultBlock>
+          {resumo.conceitos && <MapaConceitos conceitos={resumo.conceitos} />}
           <ResultBlock label="a pergunta do mês" color={C.success}><p style={{ fontSize: "16px", color: C.cream, lineHeight: 1.7, margin: 0, fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic" }}>{resumo.pergunta}</p></ResultBlock>
           <div style={{ textAlign: "center", padding: "16px 0" }}><p style={{ fontSize: "12px", color: C.muted, fontStyle: "italic", lineHeight: 1.8 }}>{resumo.fechamento}</p></div>
         </>
@@ -905,6 +965,78 @@ function EntradaDetalhe({ entry, setView }) {
         ))}
       </div>
     </Screen>
+  );
+}
+
+
+// ══════════════════════════════════════════════════════════
+// MAPA DE CONCEITOS — TAGS A3
+// ══════════════════════════════════════════════════════════
+function MapaConceitos({ conceitos }) {
+  const [aberto, setAberto] = useState(null);
+  if (!conceitos || conceitos.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: "20px" }}>
+      <p style={{ fontSize: "10px", letterSpacing: "0.15em", color: C.goldDim, textTransform: "uppercase", marginBottom: "12px" }}>conceitos da semana</p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
+        {conceitos.map((c, i) => (
+          <button key={i} onClick={() => setAberto(aberto === i ? null : i)} style={{
+            padding: "6px 14px", borderRadius: "20px", cursor: "pointer",
+            fontSize: "12px", fontWeight: 500, transition: "all 0.2s",
+            background: aberto === i ? C.gold : C.surface,
+            border: `1px solid ${aberto === i ? C.gold : C.border}`,
+            color: aberto === i ? C.bg : C.mutedHi,
+          }}>
+            {c.tag}
+          </button>
+        ))}
+      </div>
+
+      {aberto !== null && conceitos[aberto] && (
+        <div style={{
+          background: C.card, border: `1px solid ${C.gold}44`,
+          borderLeft: `3px solid ${C.gold}`,
+          borderRadius: "6px", padding: "20px",
+          animation: "fadeIn 0.2s ease"
+        }}>
+          <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+
+          <p style={{ fontSize: "14px", fontFamily: "'Cormorant Garamond', Georgia, serif", color: C.cream, fontWeight: 400, margin: "0 0 12px" }}>
+            {conceitos[aberto].tag}
+          </p>
+
+          <div style={{ marginBottom: "12px" }}>
+            <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "6px" }}>o que é</p>
+            <p style={{ fontSize: "13px", color: C.text, lineHeight: 1.7, margin: 0 }}>{conceitos[aberto].definicao}</p>
+          </div>
+
+          <div style={{ marginBottom: "12px" }}>
+            <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "6px" }}>como apareceu nos seus rituais</p>
+            <p style={{ fontSize: "13px", color: C.text, lineHeight: 1.7, margin: 0 }}>{conceitos[aberto].apareceu}</p>
+          </div>
+
+          {conceitos[aberto].tensao && (
+            <div style={{ marginBottom: "12px" }}>
+              <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "6px" }}>a conversa que existe</p>
+              <p style={{ fontSize: "13px", color: C.text, lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>{conceitos[aberto].tensao}</p>
+            </div>
+          )}
+
+          {conceitos[aberto].sugestao && (
+            <div style={{ background: `${C.gold}11`, borderRadius: "4px", padding: "10px 14px" }}>
+              <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "4px" }}>para ir mais além</p>
+              <p style={{ fontSize: "12px", color: C.text, lineHeight: 1.6, margin: 0 }}>{conceitos[aberto].sugestao}</p>
+            </div>
+          )}
+
+          <button onClick={() => setAberto(null)} style={{
+            background: "none", border: "none", color: C.muted,
+            fontSize: "11px", cursor: "pointer", marginTop: "14px", padding: 0
+          }}>fechar ↑</button>
+        </div>
+      )}
+    </div>
   );
 }
 

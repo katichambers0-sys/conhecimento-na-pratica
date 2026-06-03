@@ -7,14 +7,14 @@ const C = {
   border:   "#D4C9BF",
   borderHi: "#8B6355",
   gold:     "#5C1F2E",
-  goldDim:  "#8B6355",
+  goldDim:  "#7B3545",
   blush:    "#7B3545",
-  cream:    "#2C1810",
-  muted:    "#9A8880",
-  mutedHi:  "#6B5248",
-  text:     "#3D2418",
-  ink:      "#2C1810",
-  success:  "#4A6741",
+  cream:    "#1A0C06",
+  muted:    "#7A6A62",
+  mutedHi:  "#4A3228",
+  text:     "#2C1810",
+  ink:      "#1A0C06",
+  success:  "#3A5630",
 };
 
 const PROMPTS = {
@@ -65,7 +65,7 @@ function getPronomes(pronomes) {
 }
 
 // ── síntese local (sem API) ───────────────────────────────
-function gerarSinteseLocal(answers, livro) {
+function gerarSinteseLocal(answers, livro, tipo) {
   const tudo = `${answers.capturar} ${answers.conectar} ${answers.converter}`.toLowerCase();
   const temas = {
     burnout:     /burnout|cansaço|exaust|esgot|sobrecarga|descanso|parar/.test(tudo),
@@ -153,14 +153,14 @@ function gerarSinteseLocal(answers, livro) {
     ancora:   ancoras[temaDominante] || ancoras.default,
     espelho:  espelhos[temaDominante] || espelhos.default,
     expansao: "isso conversa com muita coisa. quando tiver curiosidade, vale explorar autores que pensam nessa direção.",
-    convite:  acao.length > 15 ? acao : `essa semana, escolhe um momento, pode ser dez minutos, pra observar onde esse livro aparece na sua vida. só notar já é o primeiro movimento.`,
+    convite:  acao.length > 15 ? acao : `essa semana, escolhe um momento, pode ser dez minutos, pra observar onde ${tipo === "filme" ? "esse filme" : tipo === "podcast" ? "esse podcast" : tipo === "video" ? "esse vídeo" : tipo === "ideia" ? "essa ideia" : "esse livro"} aparece na sua vida. só notar já é o primeiro movimento.`,
     cuidado:  "",
     modo:     "local",
   };
 }
 
 // ── API call — ritual ─────────────────────────────────────
-async function callClaudeAPI(answers, livro, perfil) {
+async function callClaudeAPI(answers, livro, autor, tipo, perfil) {
   const apiKey = import.meta.env.VITE_ANTHROPIC_KEY;
   const nomeTxt = perfil?.nome ? `a pessoa se chama ${perfil.nome}.` : "";
   const pronomesTxt = perfil?.pronomes && perfil.pronomes !== "prefiro não dizer"
@@ -198,12 +198,14 @@ o que você nunca faz: adular, diagnosticar, motivar com frases ocas, simplifica
 
 agora leia o que essa pessoa escreveu. deixe entrar. e responda como só você responderia.
 
-a pessoa acabou de ler: "${livro}"
+a pessoa trouxe para o ritual: "${livro}" ${autor ? `(${autor})` : ""} — tipo: ${tipo || "livro"}
 
 o que escreveu:
 o que ficou: ${answers.capturar}
 onde isso aparece na vida: ${answers.conectar}
 o que quer fazer com isso: ${answers.converter}
+
+note: adapte a linguagem ao tipo de conteúdo. se for filme, use "assistiu" e "cena" em vez de "leu" e "página". se for podcast ou vídeo, use "ouviu" ou "viu". se for uma ideia, "pensou sobre" ou "trouxe". se for livro, use "leu". isso torna a resposta mais natural e conectada com a experiência real da pessoa.
 
 cinco campos — cada um com uma ideia só, bem dita:
 
@@ -246,13 +248,13 @@ retorne APENAS json válido, sem markdown:
   return { ...JSON.parse(raw.replace(/```json|```/g, "").trim()), modo: "api" };
 }
 
-async function gerarSintese(answers, livro, perfil) {
+async function gerarSintese(answers, livro, autor, tipo, perfil) {
   const apiKey = import.meta.env.VITE_ANTHROPIC_KEY;
   if (apiKey) {
-    try { return await callClaudeAPI(answers, livro, perfil); } catch {}
+    try { return await callClaudeAPI(answers, livro, autor, tipo, perfil); } catch {}
   }
   await new Promise(r => setTimeout(r, 1800));
-  return gerarSinteseLocal(answers, livro);
+  return gerarSinteseLocal(answers, livro, tipo);
 }
 
 // ── API call — reflexão semanal ───────────────────────────
@@ -466,7 +468,7 @@ export default function App() {
   const nomeDisplay = perfil?.nome ? `, ${perfil.nome}` : "";
 
   return (
-    <div style={{ background: C.bg, minHeight: "100vh", fontFamily: "'DM Sans', system-ui, sans-serif", color: C.text }}>
+    <div style={{ background: C.bg, minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", color: C.text, WebkitFontSmoothing: "antialiased" }}>
       {view === "loading"       && <div style={{ minHeight: "100vh" }} />}
       {view === "onboarding"    && <Onboarding onComplete={(p) => { savePer(p); saveOnboarded(); setView("home"); }} />}
       {view === "home"          && <Home streak={streak} entries={entries} setView={setView} setSelected={setSelected} nomeDisplay={nomeDisplay} mostrarReflexaoSemanal={mostrarReflexaoSemanal} rituaisEssaSemana={rituaisEssaSemana} mostrarResumoMensal={mostrarResumoMensal} rituaisMesPassado={rituaisMesPassado} mesPassado={mesPassado} setMesResumo={setMesResumo} />}
@@ -671,6 +673,7 @@ function Ritual({ onSave, setView, perfil }) {
   const [step, setStep]         = useState(0);
   const [livro, setLivro]       = useState("");
   const [autor, setAutor]       = useState("");
+  const [tipo, setTipo]         = useState("livro");
   const [answers, setAnswers]   = useState({ capturar: "", conectar: "", converter: "" });
   const [prompts]               = useState({
     capturar: randomPick(PROMPTS.capturar),
@@ -686,8 +689,9 @@ function Ritual({ onSave, setView, perfil }) {
   useEffect(() => { taRef.current?.focus(); }, [step]);
 
   const keys  = ["capturar","conectar","converter"];
+  const tipoLabel = tipo === "filme" ? "o filme" : tipo === "podcast" ? "o podcast" : tipo === "video" ? "o vídeo" : tipo === "ideia" ? "essa ideia" : "o livro";
   const descs = [
-    "o que ficou depois que você fechou o livro",
+    `o que ficou depois que você terminou ${tipoLabel}`,
     "onde essa ideia vive na sua vida agora",
     "o que você vai fazer com isso essa semana",
   ];
@@ -701,29 +705,61 @@ function Ritual({ onSave, setView, perfil }) {
     if (step < 3) { setStep(s => s + 1); return; }
     setStep(4);
     try {
-      const r = await gerarSintese(answers, livro, perfil);
+      const r = await gerarSintese(answers, livro, autor, tipo, perfil);
       setResult(r);
       setStep(5);
-      onSave({ livro, autor, ...answers, ancora: r.ancora, espelho: r.espelho, expansao: r.expansao, convite: r.convite, cuidado: r.cuidado, date: new Date().toISOString() });
+      onSave({ livro, autor, tipo, ...answers, ancora: r.ancora, espelho: r.espelho, expansao: r.expansao, convite: r.convite, cuidado: r.cuidado, date: new Date().toISOString() });
     } catch {
       setError("algo deu errado. suas reflexões foram salvas.");
-      onSave({ livro, autor, ...answers, date: new Date().toISOString() });
+      onSave({ livro, autor, tipo, ...answers, date: new Date().toISOString() });
       setStep(5);
     }
   };
 
+  const tiposConteudo = [
+    { id: "livro", label: "📖 livro", placeholder: "ex: a sociedade do cansaço", autorLabel: "autor (opcional)", autorPlaceholder: "ex: byung-chul han" },
+    { id: "filme", label: "🎬 filme", placeholder: "ex: boyhood", autorLabel: "diretor (opcional)", autorPlaceholder: "ex: richard linklater" },
+    { id: "podcast", label: "🎙️ podcast", placeholder: "ex: huberman lab", autorLabel: "episódio ou host (opcional)", autorPlaceholder: "ex: ep. sobre sono" },
+    { id: "video", label: "▶️ vídeo", placeholder: "ex: palestra de brené brown", autorLabel: "canal ou autor (opcional)", autorPlaceholder: "ex: ted talks" },
+    { id: "ideia", label: "💡 uma ideia", placeholder: "ex: sobre o valor do silêncio", autorLabel: "origem (opcional)", autorPlaceholder: "ex: conversa com uma amiga" },
+  ];
+
   if (step === 0) return (
     <Screen title="por onde começamos?" subtitle="o ritual" onBack={() => setView("home")}>
-      <p style={{ fontSize: "13px", color: C.muted, marginBottom: "28px", lineHeight: 1.7 }}>não precisa ter terminado. pode ser um capítulo, uma ideia, uma página que ficou.</p>
-      <Field label="título do livro" required>
-        <input ref={taRef} value={livro} onChange={e => setLivro(e.target.value)}
-          placeholder="ex: a sociedade do cansaço" style={inputStyle()}
-          onKeyDown={e => e.key === "Enter" && canNext() && next()} />
+      <p style={{ fontSize: "13px", color: C.muted, marginBottom: "20px", lineHeight: 1.7 }}>pode ser um livro, filme, podcast, vídeo — ou simplesmente uma ideia que ficou.</p>
+
+      <Field label="o que você quer trazer?">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "4px" }}>
+          {tiposConteudo.map(t => (
+            <button key={t.id} onClick={() => setTipo(t.id)} style={{
+              padding: "8px 14px", borderRadius: "20px", cursor: "pointer",
+              fontSize: "12px", transition: "all 0.2s",
+              background: tipo === t.id ? C.gold : C.surface,
+              border: `1px solid ${tipo === t.id ? C.gold : C.border}`,
+              color: tipo === t.id ? C.bg : C.mutedHi,
+            }}>{t.label}</button>
+          ))}
+        </div>
       </Field>
-      <Field label="autor (opcional)">
-        <input value={autor} onChange={e => setAutor(e.target.value)} placeholder="ex: byung-chul han" style={inputStyle()} />
-      </Field>
-      <Btn onClick={next} disabled={!canNext()}>começar →</Btn>
+
+      {tipo && (() => {
+        const t = tiposConteudo.find(t => t.id === tipo);
+        return (
+          <>
+            <Field label="título" required>
+              <input ref={taRef} value={livro} onChange={e => setLivro(e.target.value)}
+                placeholder={t.placeholder} style={inputStyle()}
+                onKeyDown={e => e.key === "Enter" && canNext() && next()} />
+            </Field>
+            <Field label={t.autorLabel}>
+              <input value={autor} onChange={e => setAutor(e.target.value)}
+                placeholder={t.autorPlaceholder} style={inputStyle()} />
+            </Field>
+          </>
+        );
+      })()}
+
+      <Btn onClick={next} disabled={!canNext()} style={{ marginTop: "8px" }}>começar →</Btn>
     </Screen>
   );
 
@@ -755,7 +791,7 @@ function Ritual({ onSave, setView, perfil }) {
   );
 
   if (step === 5) return (
-    <Screen title={livro} subtitle="sua voz nessa leitura" onBack={() => setView("home")} backLabel="voltar ao início">
+    <Screen title={livro} subtitle={`sua voz ${tipo === "filme" ? "nesse filme" : tipo === "podcast" ? "nesse podcast" : tipo === "video" ? "nesse vídeo" : tipo === "ideia" ? "nessa ideia" : "nessa leitura"}`} onBack={() => setView("home")} backLabel="voltar ao início">
       {error && <p style={{ fontSize: "12px", color: C.blush, marginBottom: "16px" }}>{error}</p>}
       {result?.ancora && (
         <div style={{ background: `${C.gold}15`, border: `1px solid ${C.gold}44`, borderRadius: "6px", padding: "24px", marginBottom: "20px", textAlign: "center" }}>
@@ -929,7 +965,10 @@ function Biblioteca({ entries, setView, setSelected }) {
                 <p style={{ fontSize: "14px", fontFamily: "'Cormorant Garamond', Georgia, serif", color: C.cream, margin: 0 }}>{e.livro}</p>
                 <p style={{ fontSize: "10px", color: C.muted, margin: 0 }}>{fmt(e.date)}</p>
               </div>
-              {e.ancora && <p style={{ fontSize: "12px", color: C.gold, fontStyle: "italic", margin: "6px 0 0" }}>"{e.ancora}"</p>}
+              <div style={{ display: "flex", gap: "8px", alignItems: "center", marginTop: "6px" }}>
+                {e.tipo && e.tipo !== "livro" && <span style={{ fontSize: "10px", padding: "2px 8px", borderRadius: "10px", background: `${C.gold}22`, color: C.goldDim, border: `1px solid ${C.gold}33` }}>{e.tipo}</span>}
+                {e.ancora && <p style={{ fontSize: "12px", color: C.gold, fontStyle: "italic", margin: 0 }}>"{e.ancora}"</p>}
+              </div>
             </div>
           ))}
         </>
@@ -1107,7 +1146,7 @@ function inputStyle() {
     width: "100%", padding: "12px 14px",
     background: C.surface, border: `1px solid ${C.border}`,
     borderRadius: "4px", color: C.ink, fontSize: "14px", outline: "none",
-    fontFamily: "'DM Sans', system-ui, sans-serif",
+    fontFamily: "'Inter', 'DM Sans', system-ui, sans-serif",
     boxSizing: "border-box", transition: "border-color 0.2s"
   };
 }

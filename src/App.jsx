@@ -18,28 +18,127 @@ const C = {
 };
 
 const PROMPTS = {
-  capturar: [
-    "qual frase do livro ficou na cabeça mesmo depois que você fechou?",
-    "se esse livro fosse uma conversa, o que ele estaria te dizendo?",
-    "o que te surpreendeu, algo que contradisse o que você já pensava?",
-    "qual ideia você voltou a ler mais de uma vez, mesmo sem saber por quê?",
-    "o que ficou incomodando de um jeito bom?",
-  ],
-  conectar: [
-    "onde na sua vida isso está acontecendo agora, mesmo que de um jeito diferente?",
-    "se esse livro fosse um espelho, o que ele estaria mostrando?",
-    "isso ressoa com algo que você já sabe mas ainda não age?",
-    "onde você sente isso, nas relações, no trabalho, em você?",
-    "tem alguém na sua vida que veio à cabeça enquanto você lia? por quê?",
-  ],
-  converter: [
-    "se você fosse fazer uma coisa só com tudo isso, qual seria?",
-    "qual é o menor gesto possível que já muda alguma coisa?",
-    "o que mudaria se você levasse essa ideia a sério por uma semana?",
-    "o que você quer lembrar disso daqui a um mês?",
-    "se esse livro te deu permissão pra algo, o que seria?",
-  ],
+  livro: {
+    capturar: [
+      "qual frase ficou na cabeça mesmo depois que você fechou o livro?",
+      "se esse livro fosse uma conversa, o que ele estaria te dizendo?",
+      "o que te surpreendeu — algo que contradisse o que você já pensava?",
+      "qual ideia você voltou a ler mais de uma vez, mesmo sem saber por quê?",
+      "o que ficou incomodando de um jeito bom?",
+    ],
+    conectar: [
+      "onde na sua vida isso está acontecendo agora, mesmo que de um jeito diferente?",
+      "se esse livro fosse um espelho, o que ele estaria mostrando?",
+      "isso ressoa com algo que você já sabe mas ainda não age?",
+      "onde você sente isso — nas relações, no trabalho, em você?",
+      "tem alguém na sua vida que veio à cabeça enquanto você lia? por quê?",
+    ],
+    converter: [
+      "se você fosse fazer uma coisa só com tudo isso, qual seria?",
+      "qual é o menor gesto possível que já muda alguma coisa?",
+      "o que mudaria se você levasse essa ideia a sério por uma semana?",
+      "o que você quer lembrar disso daqui a um mês?",
+      "se esse livro te deu permissão pra algo, o que seria?",
+    ],
+  },
+  filme: {
+    capturar: [
+      "qual cena ficou na cabeça mesmo depois que as luzes acenderam?",
+      "se esse filme fosse uma conversa, o que ele estaria te dizendo?",
+      "o que te surpreendeu — algo que contradisse o que você esperava ver?",
+      "qual personagem ou momento você ainda está digerindo?",
+      "o que ficou incomodando de um jeito bom?",
+    ],
+    conectar: [
+      "onde na sua vida isso está acontecendo agora, mesmo que de um jeito diferente?",
+      "se esse filme fosse um espelho, o que ele estaria mostrando?",
+      "algum personagem te lembrou alguém — ou você mesma em algum momento?",
+      "onde você sente isso — nas relações, no trabalho, em você?",
+      "tem algo nesse filme que você gostaria de mostrar pra alguém específico? por quê?",
+    ],
+    converter: [
+      "se você fosse levar uma coisa desse filme pra sua vida, qual seria?",
+      "qual é o menor gesto possível que nasce do que você viu?",
+      "o que mudaria se você levasse essa ideia a sério por uma semana?",
+      "o que você quer lembrar desse filme daqui a um mês?",
+      "se esse filme te deu permissão pra algo, o que seria?",
+    ],
+  },
+  podcast: {
+    capturar: [
+      "qual ideia desse episódio você ainda está digerindo?",
+      "se esse podcast fosse uma conversa, o que ele estaria te dizendo?",
+      "o que te surpreendeu — algo que contradisse o que você já pensava?",
+      "qual momento você pausou pra pensar, mesmo sem perceber por quê?",
+      "o que ficou ecoando depois que você tirou o fone?",
+    ],
+    conectar: [
+      "onde na sua vida isso está acontecendo agora, mesmo que de um jeito diferente?",
+      "se esse episódio fosse um espelho, o que ele estaria mostrando?",
+      "isso ressoa com algo que você já sabe mas ainda não age?",
+      "onde você sente isso — nas relações, no trabalho, em você?",
+      "tem alguém na sua vida que precisaria ouvir esse episódio? por quê?",
+    ],
+    converter: [
+      "se você fosse fazer uma coisa só com o que ouviu, qual seria?",
+      "qual é o menor gesto possível que nasce do que você ouviu?",
+      "o que mudaria se você levasse essa ideia a sério por uma semana?",
+      "o que você quer lembrar desse episódio daqui a um mês?",
+      "se esse podcast te deu permissão pra algo, o que seria?",
+    ],
+  },
+  video: {
+    capturar: [
+      "qual ideia desse vídeo você ainda está digerindo?",
+      "se esse vídeo fosse uma conversa, o que ele estaria te dizendo?",
+      "o que te surpreendeu — algo que contradisse o que você já pensava?",
+      "qual momento você voltou a assistir, mesmo sem saber por quê?",
+      "o que ficou incomodando de um jeito bom?",
+    ],
+    conectar: [
+      "onde na sua vida isso está acontecendo agora, mesmo que de um jeito diferente?",
+      "se esse vídeo fosse um espelho, o que ele estaria mostrando?",
+      "isso ressoa com algo que você já sabe mas ainda não age?",
+      "onde você sente isso — nas relações, no trabalho, em você?",
+      "tem alguém na sua vida que veio à cabeça enquanto você assistia? por quê?",
+    ],
+    converter: [
+      "se você fosse fazer uma coisa só com o que viu, qual seria?",
+      "qual é o menor gesto possível que nasce do que você assistiu?",
+      "o que mudaria se você levasse essa ideia a sério por uma semana?",
+      "o que você quer lembrar desse vídeo daqui a um mês?",
+      "se esse vídeo te deu permissão pra algo, o que seria?",
+    ],
+  },
+  ideia: {
+    capturar: [
+      "de onde essa ideia veio — e por que ficou?",
+      "se essa ideia fosse uma pergunta, qual seria?",
+      "o que nessa ideia contradisse algo que você já pensava?",
+      "qual parte dessa ideia você ainda está tentando entender?",
+      "o que essa ideia está incomodando de um jeito bom?",
+    ],
+    conectar: [
+      "onde na sua vida essa ideia está aparecendo agora?",
+      "se essa ideia fosse um espelho, o que ela estaria mostrando?",
+      "isso ressoa com algo que você já sabe mas ainda não nomeou?",
+      "onde você sente essa ideia — nas relações, no trabalho, em você?",
+      "tem alguém na sua vida com quem você queria compartilhar isso? por quê?",
+    ],
+    converter: [
+      "se você fosse fazer uma coisa só com essa ideia, qual seria?",
+      "qual é o menor gesto possível que nasce dela?",
+      "o que mudaria se você levasse essa ideia a sério por uma semana?",
+      "o que você quer lembrar dessa ideia daqui a um mês?",
+      "se essa ideia te deu permissão pra algo, o que seria?",
+    ],
+  },
 };
+
+// helper para pegar prompts pelo tipo
+function getPrompts(tipo) {
+  return PROMPTS[tipo] || PROMPTS.livro;
+}
 
 const LOADING_MSGS = [
   "deixa eu pensar no que você trouxe...",
@@ -149,10 +248,22 @@ function gerarSinteseLocal(answers, livro, tipo) {
     default:     "cada leitura deixa uma marca que nem sempre conseguimos nomear logo. o que você trouxe aqui é o começo de uma conversa.",
   };
   const temaDominante = Object.entries(temas).find(([, v]) => v)?.[0] || "default";
+  const expansaoPool = {
+    burnout: "para ler: Byung-Chul Han, A Sociedade do Cansaço — o diagnóstico mais preciso do nosso tempo. para ver: documentário The Social Dilemma (Netflix). conceito: o sujeito de desempenho — han descreve alguém que não é explorado por outro, mas por si mesmo. é curioso como a exaustão moderna tem essa origem interna.",
+    relacoes: "para ler: bell hooks, Tudo Sobre o Amor — amor como prática, não sentimento. para ver: Marriage Story (2019). conceito: teoria do apego — bowlby mostrou que nossos padrões relacionais adultos têm raízes em como fomos cuidados. a pergunta que fica: o que você aprendeu sobre estar com alguém?",
+    carreira: "para ler: Cal Newport, Deep Work — sobre fazer trabalho que importa de verdade. para ver: Abstract: The Art of Design (Netflix). conceito: ikigai — a interseção entre o que você ama, o que você faz bem, o que o mundo precisa e pelo que pode ser reconhecida. vale a pena desenhar o seu.",
+    identidade: "para ler: Chimamanda Ngozi Adichie, Sejamos Todos Feministas. para ver: Moonlight (2016). conceito: individuação (Jung) versus construcionismo social — jung diria que você se torna quem você é. gergen diria que você se torna em relação. talvez as duas coisas sejam verdade ao mesmo tempo.",
+    mudanca: "para ler: James Clear, Hábitos Atômicos. para ver: Everything Everywhere All at Once (2022). conceito: zona de desenvolvimento proximal (Vygotsky) — a distância entre o que você consegue sozinha e o que consegue com apoio. às vezes mudar precisa de companhia.",
+    medo: "para ler: Brené Brown, A Coragem de Ser Imperfeito. para ver: talk TED The Power of Vulnerability. conceito: síndrome do impostor — pesquisas mostram que afeta desproporcionalmente pessoas competentes. a ironia não passa despercebida.",
+    tempo: "para ler: Oliver Burkeman, Quatro Mil Semanas — uma vida tem exatamente isso. para ver: About Time (2013). conceito: atenção como recurso escasso — william james já dizia que a experiência é aquilo a que você presta atenção. o que você está escolhendo notar?",
+    conhecimento: "para ler: Mortimer Adler, Como Ler um Livro. para ver: Most Likely to Succeed (2015). conceito: aprendizagem transformativa (Mezirow) — o conhecimento que muda como você vê o mundo, não só o que você sabe. parece que você está nesse território.",
+    default: "para ler: Maria Popova, Figuras de Pensamento — sobre como ideias se conectam através do tempo. para ver: Abstract: The Art of Design (Netflix). conceito: transferência de aprendizagem — a capacidade de aplicar o que aprendemos num contexto noutro. é exatamente o que este ritual está a treinar.",
+  };
+
   return {
     ancora:   ancoras[temaDominante] || ancoras.default,
     espelho:  espelhos[temaDominante] || espelhos.default,
-    expansao: "isso conversa com muita coisa. quando tiver curiosidade, vale explorar autores que pensam nessa direção.",
+    expansao: expansaoPool[temaDominante] || expansaoPool.default,
     convite:  acao.length > 15 ? acao : `essa semana, escolhe um momento, pode ser dez minutos, pra observar onde ${tipo === "filme" ? "esse filme" : tipo === "podcast" ? "esse podcast" : tipo === "video" ? "esse vídeo" : tipo === "ideia" ? "essa ideia" : "esse livro"} aparece na sua vida. só notar já é o primeiro movimento.`,
     cuidado:  "",
     modo:     "local",
@@ -161,7 +272,7 @@ function gerarSinteseLocal(answers, livro, tipo) {
 
 // ── API call — ritual ─────────────────────────────────────
 async function callClaudeAPI(answers, livro, autor, tipo, perfil) {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_KEY;
+  const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   const nomeTxt = perfil?.nome ? `a pessoa se chama ${perfil.nome}.` : "";
   const pronomesTxt = perfil?.pronomes && perfil.pronomes !== "prefiro não dizer"
     ? `usa pronomes ${perfil.pronomes}. adapte a linguagem de acordo, usando esses pronomes quando necessário.`
@@ -249,7 +360,7 @@ retorne APENAS json válido, sem markdown:
 }
 
 async function gerarSintese(answers, livro, autor, tipo, perfil) {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_KEY;
+  const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   if (apiKey) {
     try { return await callClaudeAPI(answers, livro, autor, tipo, perfil); } catch {}
   }
@@ -259,7 +370,7 @@ async function gerarSintese(answers, livro, autor, tipo, perfil) {
 
 // ── API call — reflexão semanal ───────────────────────────
 async function gerarReflexaoSemanal(rituais, perfil) {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_KEY;
+  const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   if (!apiKey) return null;
 
   const nomeTxt = perfil?.nome ? `a pessoa se chama ${perfil.nome}.` : "";
@@ -322,7 +433,7 @@ retorne APENAS json válido, sem markdown:
 
 // ── API call — resumo mensal ──────────────────────────────
 async function gerarResumoMensal(rituais, mes, perfil) {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_KEY;
+  const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   if (!apiKey) return null;
 
   const nomeTxt = perfil?.nome ? `a pessoa se chama ${perfil.nome}.` : "";
@@ -675,10 +786,13 @@ function Ritual({ onSave, setView, perfil }) {
   const [autor, setAutor]       = useState("");
   const [tipo, setTipo]         = useState("livro");
   const [answers, setAnswers]   = useState({ capturar: "", conectar: "", converter: "" });
-  const [prompts]               = useState({
-    capturar: randomPick(PROMPTS.capturar),
-    conectar: randomPick(PROMPTS.conectar),
-    converter: randomPick(PROMPTS.converter),
+  const [prompts]               = useState(() => {
+    const p = getPrompts(tipo);
+    return {
+      capturar: randomPick(p.capturar),
+      conectar: randomPick(p.conectar),
+      converter: randomPick(p.converter),
+    };
   });
   const [result, setResult]     = useState(null);
   const [error, setError]       = useState("");
@@ -1150,4 +1264,3 @@ function inputStyle() {
     boxSizing: "border-box", transition: "border-color 0.2s"
   };
 }
- 

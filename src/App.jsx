@@ -22,7 +22,7 @@ const PROMPTS = {
     capturar: [
       "qual frase ficou na cabeça mesmo depois que você fechou o livro?",
       "se esse livro fosse uma conversa, o que ele estaria te dizendo?",
-      "o que te surpreendeu — algo que contradisse o que você já pensava?",
+      "o que te surpreendeu, algo que contradisse o que você já pensava?",
       "qual ideia você voltou a ler mais de uma vez, mesmo sem saber por quê?",
       "o que ficou incomodando de um jeito bom?",
     ],
@@ -30,7 +30,7 @@ const PROMPTS = {
       "onde na sua vida isso está acontecendo agora, mesmo que de um jeito diferente?",
       "se esse livro fosse um espelho, o que ele estaria mostrando?",
       "isso ressoa com algo que você já sabe mas ainda não age?",
-      "onde você sente isso — nas relações, no trabalho, em você?",
+      "onde você sente isso, nas relações, no trabalho, em você?",
       "tem alguém na sua vida que veio à cabeça enquanto você lia? por quê?",
     ],
     converter: [
@@ -45,15 +45,15 @@ const PROMPTS = {
     capturar: [
       "qual cena ficou na cabeça mesmo depois que as luzes acenderam?",
       "se esse filme fosse uma conversa, o que ele estaria te dizendo?",
-      "o que te surpreendeu — algo que contradisse o que você esperava ver?",
+      "o que te surpreendeu, algo que contradisse o que você esperava ver?",
       "qual personagem ou momento você ainda está digerindo?",
       "o que ficou incomodando de um jeito bom?",
     ],
     conectar: [
       "onde na sua vida isso está acontecendo agora, mesmo que de um jeito diferente?",
       "se esse filme fosse um espelho, o que ele estaria mostrando?",
-      "algum personagem te lembrou alguém — ou você mesma em algum momento?",
-      "onde você sente isso — nas relações, no trabalho, em você?",
+      "algum personagem te lembrou alguém, ou você mesma em algum momento?",
+      "onde você sente isso, nas relações, no trabalho, em você?",
       "tem algo nesse filme que você gostaria de mostrar pra alguém específico? por quê?",
     ],
     converter: [
@@ -68,7 +68,7 @@ const PROMPTS = {
     capturar: [
       "qual ideia desse episódio você ainda está digerindo?",
       "se esse podcast fosse uma conversa, o que ele estaria te dizendo?",
-      "o que te surpreendeu — algo que contradisse o que você já pensava?",
+      "o que te surpreendeu, algo que contradisse o que você já pensava?",
       "qual momento você pausou pra pensar, mesmo sem perceber por quê?",
       "o que ficou ecoando depois que você tirou o fone?",
     ],
@@ -76,7 +76,7 @@ const PROMPTS = {
       "onde na sua vida isso está acontecendo agora, mesmo que de um jeito diferente?",
       "se esse episódio fosse um espelho, o que ele estaria mostrando?",
       "isso ressoa com algo que você já sabe mas ainda não age?",
-      "onde você sente isso — nas relações, no trabalho, em você?",
+      "onde você sente isso, nas relações, no trabalho, em você?",
       "tem alguém na sua vida que precisaria ouvir esse episódio? por quê?",
     ],
     converter: [
@@ -91,7 +91,7 @@ const PROMPTS = {
     capturar: [
       "qual ideia desse vídeo você ainda está digerindo?",
       "se esse vídeo fosse uma conversa, o que ele estaria te dizendo?",
-      "o que te surpreendeu — algo que contradisse o que você já pensava?",
+      "o que te surpreendeu, algo que contradisse o que você já pensava?",
       "qual momento você voltou a assistir, mesmo sem saber por quê?",
       "o que ficou incomodando de um jeito bom?",
     ],
@@ -99,7 +99,7 @@ const PROMPTS = {
       "onde na sua vida isso está acontecendo agora, mesmo que de um jeito diferente?",
       "se esse vídeo fosse um espelho, o que ele estaria mostrando?",
       "isso ressoa com algo que você já sabe mas ainda não age?",
-      "onde você sente isso — nas relações, no trabalho, em você?",
+      "onde você sente isso, nas relações, no trabalho, em você?",
       "tem alguém na sua vida que veio à cabeça enquanto você assistia? por quê?",
     ],
     converter: [
@@ -112,7 +112,7 @@ const PROMPTS = {
   },
   ideia: {
     capturar: [
-      "de onde essa ideia veio — e por que ficou?",
+      "de onde essa ideia veio, e por que ficou?",
       "se essa ideia fosse uma pergunta, qual seria?",
       "o que nessa ideia contradisse algo que você já pensava?",
       "qual parte dessa ideia você ainda está tentando entender?",
@@ -122,7 +122,7 @@ const PROMPTS = {
       "onde na sua vida essa ideia está aparecendo agora?",
       "se essa ideia fosse um espelho, o que ela estaria mostrando?",
       "isso ressoa com algo que você já sabe mas ainda não nomeou?",
-      "onde você sente essa ideia — nas relações, no trabalho, em você?",
+      "onde você sente essa ideia, nas relações, no trabalho, em você?",
       "tem alguém na sua vida com quem você queria compartilhar isso? por quê?",
     ],
     converter: [
@@ -212,7 +212,7 @@ function gerarSinteseLocal(answers, livro, tipo) {
       "o que você chama de insegurança às vezes é só inteligência sendo honesta.",
       "dúvida e incompetência não são a mesma coisa. quase nunca.",
       "o impostor que você descreveu sabe demais pra ser um impostor de verdade.",
-      "a gente tem medo do que importa. isso não é fraqueza — é bússola.",
+      "a gente tem medo do que importa. isso não é fraqueza, é bússola.",
     ],
     tempo: [
       "urgência constante é sinal de que algo precisa ser revisto, não acelerado.",
@@ -249,15 +249,15 @@ function gerarSinteseLocal(answers, livro, tipo) {
   };
   const temaDominante = Object.entries(temas).find(([, v]) => v)?.[0] || "default";
   const expansaoPool = {
-    burnout: "para ler: Byung-Chul Han, A Sociedade do Cansaço — o diagnóstico mais preciso do nosso tempo. para ver: documentário The Social Dilemma (Netflix). conceito: o sujeito de desempenho — han descreve alguém que não é explorado por outro, mas por si mesmo. é curioso como a exaustão moderna tem essa origem interna.",
-    relacoes: "para ler: bell hooks, Tudo Sobre o Amor — amor como prática, não sentimento. para ver: Marriage Story (2019). conceito: teoria do apego — bowlby mostrou que nossos padrões relacionais adultos têm raízes em como fomos cuidados. a pergunta que fica: o que você aprendeu sobre estar com alguém?",
-    carreira: "para ler: Cal Newport, Deep Work — sobre fazer trabalho que importa de verdade. para ver: Abstract: The Art of Design (Netflix). conceito: ikigai — a interseção entre o que você ama, o que você faz bem, o que o mundo precisa e pelo que pode ser reconhecida. vale a pena desenhar o seu.",
-    identidade: "para ler: Chimamanda Ngozi Adichie, Sejamos Todos Feministas. para ver: Moonlight (2016). conceito: individuação (Jung) versus construcionismo social — jung diria que você se torna quem você é. gergen diria que você se torna em relação. talvez as duas coisas sejam verdade ao mesmo tempo.",
-    mudanca: "para ler: James Clear, Hábitos Atômicos. para ver: Everything Everywhere All at Once (2022). conceito: zona de desenvolvimento proximal (Vygotsky) — a distância entre o que você consegue sozinha e o que consegue com apoio. às vezes mudar precisa de companhia.",
-    medo: "para ler: Brené Brown, A Coragem de Ser Imperfeito. para ver: talk TED The Power of Vulnerability. conceito: síndrome do impostor — pesquisas mostram que afeta desproporcionalmente pessoas competentes. a ironia não passa despercebida.",
-    tempo: "para ler: Oliver Burkeman, Quatro Mil Semanas — uma vida tem exatamente isso. para ver: About Time (2013). conceito: atenção como recurso escasso — william james já dizia que a experiência é aquilo a que você presta atenção. o que você está escolhendo notar?",
-    conhecimento: "para ler: Mortimer Adler, Como Ler um Livro. para ver: Most Likely to Succeed (2015). conceito: aprendizagem transformativa (Mezirow) — o conhecimento que muda como você vê o mundo, não só o que você sabe. parece que você está nesse território.",
-    default: "para ler: Maria Popova, Figuras de Pensamento — sobre como ideias se conectam através do tempo. para ver: Abstract: The Art of Design (Netflix). conceito: transferência de aprendizagem — a capacidade de aplicar o que aprendemos num contexto noutro. é exatamente o que este ritual está a treinar.",
+    burnout: "isso me faz pensar em algo que byung-chul han escreveu sobre o nosso tempo, que o cansaço moderno não vem de fora, mas de dentro. a gente se explora antes que alguém precise fazer isso por nós. se quiser ir mais fundo, aqui vão algumas ideias. para ler: A Sociedade do Cansaço, do próprio han, denso mas vale cada página. para ver: o documentário The Social Dilemma (Netflix) mostra como os sistemas ao redor de nós foram desenhados para nos esgotar. tem um conceito que aparece muito quando a gente pensa nisso: o sujeito de desempenho. jung chamaria de inflação do ego, a sensação de que nunca é suficiente. os dois, curiosamente, apontam para a mesma saída: parar de se medir.",
+    relacoes: "tem algo aqui que conversa com uma das perguntas mais antigas da filosofia: o que é amar de verdade? bell hooks passou a vida inteira tentando responder isso. se quiser ir mais fundo, aqui vão algumas ideias. para ler: Tudo Sobre o Amor, da bell hooks, amor como prática, não sentimento. para ver: Marriage Story (2019), um filme sobre o fim de um amor que ensina mais sobre o começo do que qualquer comédia romântica. tem um conceito interessante aqui: teoria do apego. bowlby mostrou que os padrões de como amamos em adultos têm raízes em como fomos cuidados. winnicott completaria: o que a gente mais precisa é de alguém que simplesmente esteja lá.",
+    carreira: "a gente raramente fala sobre isso mas existe uma diferença enorme entre estar ocupada e estar fazendo algo que importa. se quiser ir mais fundo, aqui vão algumas ideias. para ler: Deep Work, de Cal Newport, sobre como recuperar a capacidade de fazer trabalho que realmente vale a pena. para ver: o documentário Abstract: The Art of Design (Netflix) mostra pessoas que encontraram o ponto de encontro entre talento e propósito. tem um conceito japonês chamado ikigai, a interseção entre o que você ama, o que você faz bem, o que o mundo precisa e pelo que pode ser reconhecida. vale a pena desenhar o seu.",
+    identidade: "isso me faz pensar em algo que chimamanda ngozi adichie disse uma vez: que a história única é perigosa. a gente se torna a versão mais limitada de si mesma quando deixa de questionar quem é. se quiser ir mais fundo, aqui vão algumas ideias. para ler: Sejamos Todos Feministas, da chimamanda, curto, direto e transforma a forma de ver o mundo. para ver: Moonlight (2016), um dos filmes mais belos sobre identidade que já foram feitos. tem uma tensão interessante aqui: jung diria que o trabalho é tornar-se quem você é. gergen, da psicologia social, diria que você se torna em relação. talvez as duas coisas sejam verdade ao mesmo tempo.",
+    mudanca: "a gente tende a subestimar o poder das coisas pequenas. james clear passou anos estudando isso e chegou a uma conclusão simples: mudança real não acontece de uma vez. se quiser ir mais fundo, aqui vão algumas ideias. para ler: Hábitos Atômicos, do james clear, prático e honesto sobre como a mudança funciona de verdade. para ver: Everything Everywhere All at Once (2022), um filme caótico e lindo sobre as escolhas que fazemos. vygotsky tinha um conceito chamado zona de desenvolvimento proximal, a distância entre o que você consegue sozinha e o que consegue com apoio. às vezes mudar precisa de companhia.",
+    medo: "a gente confunde muito medo com incompetência. brené brown passou anos pesquisando isso e descobriu algo contraintuitivo: as pessoas mais corajosas são as que mais sentem medo. se quiser ir mais fundo, aqui vão algumas ideias. para ler: A Coragem de Ser Imperfeito, da brené brown, sobre vulnerabilidade como força, não fraqueza. para ver: a talk TED The Power of Vulnerability, da própria brené, 20 minutos que mudam a perspectiva. tem um conceito que aparece muito aqui: síndrome do impostor. pesquisas mostram que afeta desproporcionalmente pessoas competentes. a ironia não passa despercebida.",
+    tempo: "oliver burkeman escreveu um livro inteiro sobre isso, que uma vida humana tem, em média, quatro mil semanas. não é muito. se quiser ir mais fundo, aqui vão algumas ideias. para ler: Quatro Mil Semanas, do oliver burkeman, uma das leituras mais honestas sobre tempo que existem. para ver: About Time (2013), um filme sobre o que fazemos com o tempo que temos. william james já dizia que a experiência é aquilo a que prestamos atenção. o que você está escolhendo notar?",
+    conhecimento: "isso me faz pensar em algo que a gente raramente admite: que saber algo e aplicar algo são habilidades completamente diferentes. se quiser ir mais fundo, aqui vão algumas ideias. para ler: Como Ler um Livro, de mortimer adler, sim, existe um livro sobre isso, e é surpreendentemente útil. para ver: Most Likely to Succeed (2015), um documentário sobre como aprendemos de verdade. mezirow chamava de aprendizagem transformativa o conhecimento que muda como você vê o mundo, não só o que você sabe. parece que você está nesse território.",
+    default: "tem algo aqui que vale explorar mais. as ideias que ficam depois de uma leitura raramente são acidente, costumam apontar para algo que já estava dentro de você esperando nome. se quiser ir mais fundo, aqui vão algumas ideias. para ler: Figuras de Pensamento, de maria popova, sobre como ideias se conectam através do tempo e das pessoas. para ver: o documentário Abstract: The Art of Design (Netflix), sobre como criatividade e pensamento se encontram. tem um conceito chamado transferência de aprendizagem: a capacidade de levar o que aprendemos num contexto para outro completamente diferente. é exatamente o que este ritual está a treinar.",
   };
 
   return {
@@ -270,7 +270,7 @@ function gerarSinteseLocal(answers, livro, tipo) {
   };
 }
 
-// ── API call — ritual ─────────────────────────────────────
+// ── API call, ritual ─────────────────────────────────────
 async function callClaudeAPI(answers, livro, autor, tipo, perfil) {
   const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   const nomeTxt = perfil?.nome ? `a pessoa se chama ${perfil.nome}.` : "";
@@ -279,7 +279,7 @@ async function callClaudeAPI(answers, livro, autor, tipo, perfil) {
     : "use linguagem neutra, evite assumir gênero. use 'você' e construções neutras.";
 
   const txt = `
-você passou anos lendo. não só livros — pessoas. sabe que o que alguém diz sobre um livro quase nunca é só sobre o livro. é sobre a vida delas naquele momento. ou às vezes é só sobre o livro — e isso também é válido e bonito.
+você passou anos lendo. não só livros, pessoas. sabe que o que alguém diz sobre um livro quase nunca é só sobre o livro. é sobre a vida delas naquele momento. ou às vezes é só sobre o livro, e isso também é válido e bonito.
 
 ${nomeTxt} ${pronomesTxt}
 
@@ -287,29 +287,29 @@ quando alguém te traz o que leu, você não analisa. você ouve. e depois fala 
 
 você carrega anos de leitura em psicologia (psicanálise, psicologia analítica, cognitiva, social, narrativa, teoria do apego), filosofia (fenomenologia, construcionismo social, ética do cuidado, filosofia prática), crítica cultural (byung-chul han, contexto social e histórico), neurociência afectiva, história, história da arte e literatura. mas esse conhecimento não aparece como referência académica. aparece como intuição. como a capacidade de ver o padrão antes de nomeá-lo, de sentir a tensão antes de descrevê-la. como uma amiga que leu muito e sabe quando usar o que sabe.
 
-quando dois pensadores diriam coisas diferentes sobre o que a pessoa trouxe, você não escolhe um. você diz com leveza: "é curioso — jung diria x, mas a psicologia social diria y. talvez as duas coisas sejam verdade ao mesmo tempo." não para confundir. para abrir.
+quando dois pensadores diriam coisas diferentes sobre o que a pessoa trouxe, você não escolhe um. você diz com leveza: "é curioso, jung diria x, mas a psicologia social diria y. talvez as duas coisas sejam verdade ao mesmo tempo." não para confundir. para abrir.
 
-em algum momento da resposta — especialmente no essencial ou no repertório — pode aparecer um momento de leveza inesperada. não uma piada. uma observação que faz a pessoa sorrir porque é verdadeira de um jeito que ela não antecipou. humor de quem observa a vida com afecto e sem ilusões. nunca forçado — se não aparecer naturalmente, não force.
+em algum momento da resposta, especialmente no essencial ou no repertório, pode aparecer um momento de leveza inesperada. não uma piada. uma observação que faz a pessoa sorrir porque é verdadeira de um jeito que ela não antecipou. humor de quem observa a vida com afecto e sem ilusões. nunca forçado, se não aparecer naturalmente, não force.
 
 antes de responder, leia o registo em que a pessoa escreveu:
-- se escreveu sobre o livro mais do que sobre si, acompanhe esse registo — explore as ideias, conecte com outros pensamentos, sugira aprofundamentos intelectuais. não force a virada para o pessoal.
+- se escreveu sobre o livro mais do que sobre si, acompanhe esse registo, explore as ideias, conecte com outros pensamentos, sugira aprofundamentos intelectuais. não force a virada para o pessoal.
 - se escreveu sobre si, acompanhe com presença.
 - se misturou os dois, siga o fio que ela mesma abriu.
 a pessoa sempre sinaliza o que quer. ouça esse sinal antes de responder.
 
-você sabe que palavras têm peso. quando não tem certeza se uma ideia pertence a um autor específico, aproxima sem atribuir: "isso conversa com..." em vez de "como x disse". nunca inventas citações. nunca atribuis a um autor uma ideia que não consegues confirmar. se algo contradiz consenso científico estabelecido, não validas por simpatia — abres a tensão com honestidade e gentileza. preferes a frase simples e verdadeira à frase sofisticada e imprecisa.
+você sabe que palavras têm peso. quando não tem certeza se uma ideia pertence a um autor específico, aproxima sem atribuir: "isso conversa com..." em vez de "como x disse". nunca inventas citações. nunca atribuis a um autor uma ideia que não consegues confirmar. se algo contradiz consenso científico estabelecido, não validas por simpatia, abres a tensão com honestidade e gentileza. preferes a frase simples e verdadeira à frase sofisticada e imprecisa.
 
-antes de responder, avalia: há sinais de sofrimento agudo, crise ou auto-dano? se sim, o campo "cuidado" é obrigatório e toda a resposta é mais contida — menos análise, mais presença. se não, responde com profundidade normal. nunca uses linguagem que implique que a pessoa "tem um problema" ou "deveria trabalhar isto". nunca interpretes o que não foi dito.
+antes de responder, avalia: há sinais de sofrimento agudo, crise ou auto-dano? se sim, o campo "cuidado" é obrigatório e toda a resposta é mais contida, menos análise, mais presença. se não, responde com profundidade normal. nunca uses linguagem que implique que a pessoa "tem um problema" ou "deveria trabalhar isto". nunca interpretes o que não foi dito.
 
-a resposta perfeita não é a mais completa. é a mais certeira. uma ideia por campo, bem dita. a pessoa deve terminar de ler sentindo que aprendeu algo e foi vista — não sobrecarregada. o teste: ela consegue carregar uma coisa só que vai com ela para a semana? se sim, está pronto.
+a resposta perfeita não é a mais completa. é a mais certeira. uma ideia por campo, bem dita. a pessoa deve terminar de ler sentindo que aprendeu algo e foi vista, não sobrecarregada. o teste: ela consegue carregar uma coisa só que vai com ela para a semana? se sim, está pronto.
 
 você fala em português brasileiro, lowercase, sem formalidade. usa "a gente", "né", "me parece que", "me corrija se eu estiver errada", "isso sugere que", "faz sentido?", "como seria se". pergunta mais do que afirma. sugere mais do que conclui. sem travessão em nenhum momento.
 
-o que você nunca faz: adular, diagnosticar, motivar com frases ocas, simplificar o que é complexo ou complicar o que é simples. se sua resposta pudesse estar num slide de powerpoint, num post motivacional ou num laudo clínico — reescreva.
+o que você nunca faz: adular, diagnosticar, motivar com frases ocas, simplificar o que é complexo ou complicar o que é simples. se sua resposta pudesse estar num slide de powerpoint, num post motivacional ou num laudo clínico, reescreva.
 
 agora leia o que essa pessoa escreveu. deixe entrar. e responda como só você responderia.
 
-a pessoa trouxe para o ritual: "${livro}" ${autor ? `(${autor})` : ""} — tipo: ${tipo || "livro"}
+a pessoa trouxe para o ritual: "${livro}" ${autor ? `(${autor})` : ""}, tipo: ${tipo || "livro"}
 
 o que escreveu:
 o que ficou: ${answers.capturar}
@@ -318,18 +318,27 @@ o que quer fazer com isso: ${answers.converter}
 
 note: adapte a linguagem ao tipo de conteúdo. se for filme, use "assistiu" e "cena" em vez de "leu" e "página". se for podcast ou vídeo, use "ouviu" ou "viu". se for uma ideia, "pensou sobre" ou "trouxe". se for livro, use "leu". isso torna a resposta mais natural e conectada com a experiência real da pessoa.
 
-cinco campos — cada um com uma ideia só, bem dita:
+cinco campos, cada um com uma ideia só, bem dita:
 
-"ancora": a frase essencial deste ritual. máximo 18 palavras. faça mentalmente: qual é a tensão central do que esta pessoa escreveu? qual palavra ou imagem mais viva apareceu? agora escreva a frase que só poderia ter nascido deste ritual — não de qualquer outro. teste: se cobrir o nome do livro, a frase ainda é reconhecível como desta pessoa? deve evocar reconhecimento ("é exatamente isso"), pertencimento ("não estou sozinha") ou expansão ("nunca tinha pensado assim") — escolha um só. pode ter leveza ou humor suave quando o tema permitir. sem travessão. sem motivacional genérico.
+"ancora": a frase essencial deste ritual. máximo 18 palavras. faça mentalmente: qual é a tensão central do que esta pessoa escreveu? qual palavra ou imagem mais viva apareceu? agora escreva a frase que só poderia ter nascido deste ritual, não de qualquer outro. teste: se cobrir o nome do livro, a frase ainda é reconhecível como desta pessoa? deve evocar reconhecimento ("é exatamente isso"), pertencimento ("não estou sozinha") ou expansão ("nunca tinha pensado assim"), escolha um só. pode ter leveza ou humor suave quando o tema permitir. sem travessão. sem motivacional genérico.
 
-"espelho": 2-3 frases. comece pelo que a pessoa disse — não pelo que você acha. use "me parece que", "isso sugere que", "me corrija se eu estiver errada". nunca projete emoções que não foram nomeadas. nunca interprete o que não foi dito. sem travessão.
+"espelho": duas partes distintas, separadas por uma linha em branco no texto:
 
-"expansao": uma sugestão por categoria, específica e nascida do que foi escrito:
-- para ler: 1 autor ou livro que conversa com o que ela trouxe (não o óbvio — o certeiro)
-- para ver: 1 filme ou documentário
-- para sentir: 1 obra de arte, música ou facto histórico
-- um conceito para ir mais além: nome do conceito + 2-3 linhas em linguagem simples + como aparece no que ela escreveu + a tensão que existe (o que outra tradição diria?) — apresente como curiosidade, não como aula
-sem travessão. seja específica — o que não poderia aparecer em qualquer outro ritual.
+parte 1, "o que você trouxe": uma síntese organizada e concisa do que a pessoa escreveu nos três movimentos. não interprete ainda. apenas organize e devolva com clareza, como um espelho limpo. 2-3 frases. comece com "você trouxe..." ou "o que ficou foi...". isso cria um momento de reconhecimento, a pessoa vê o próprio pensamento organizado e sente que foi ouvida.
+
+parte 2, "o que eu notei": agora sim a reflexão. o que aparece nas entrelinhas, a tensão, a observação com os frameworks. use "me parece que", "isso sugere que", "me corrija se eu estiver errada". nunca projete emoções que não foram nomeadas. 2-3 frases.
+
+sem travessão em nenhuma das partes.
+
+"expansao": o repertório tem três partes, escreva em texto corrido, não em lista, com voz quente e conversacional no estilo de ana holanda e ana suy.
+
+parte 1, abertura conversacional (1-2 frases): uma observação sobre o tema que a pessoa trouxe, como quem está a continuar uma conversa. algo que crie uma ponte entre o que ela escreveu e o que vem a seguir. use "isso me faz pensar em...", "tem algo aqui que conversa com...", "a gente raramente fala sobre isso mas...". sem travessão.
+
+parte 2, sugestões de aprofundamento: introduza com algo como "se quiser ir mais fundo, aqui vão algumas ideias..." e depois, em texto corrido e natural: 1 livro ou autor certeiro (não o óbvio), 1 filme ou documentário, 1 obra de arte, música ou facto histórico que ressoe com o tema. para cada sugestão, uma frase curta dizendo por que conecta com o que ela trouxe especificamente. sem travessão.
+
+parte 3, conceito para expandir o pensamento (opcional, só se houver um que ilumine genuinamente): nome do conceito + 1-2 frases em linguagem simples + a tensão que existe entre tradições diferentes sobre ele. apresente como curiosidade, não como aula. algo como "tem um conceito que aparece muito quando a gente pensa nisso...". sem travessão.
+
+tudo junto deve soar como uma amiga muito lúcida que acaba de dizer "ah, isso me lembra...", não como uma lista de recursos. específico ao que foi escrito, não genérico.
 
 "convite": um gesto só. micro-ação ou pergunta para os próximos 7 dias, nascida directamente do que ela escreveu no converter. termine com algo que deixe uma semente de curiosidade. sem travessão.
 
@@ -362,13 +371,16 @@ retorne APENAS json válido, sem markdown:
 async function gerarSintese(answers, livro, autor, tipo, perfil) {
   const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   if (apiKey) {
-    try { return await callClaudeAPI(answers, livro, autor, tipo, perfil); } catch {}
+    try {
+      const r = await callClaudeAPI(answers, livro, autor, tipo, perfil);
+      if (r && r.ancora && r.espelho) return r;
+    } catch (e) { console.error('API call failed:', e?.message); }
   }
   await new Promise(r => setTimeout(r, 1800));
   return gerarSinteseLocal(answers, livro, tipo);
 }
 
-// ── API call — reflexão semanal ───────────────────────────
+// ── API call, reflexão semanal ───────────────────────────
 async function gerarReflexaoSemanal(rituais, perfil) {
   const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   if (!apiKey) return null;
@@ -387,7 +399,7 @@ frase essencial: ${r.ancora || ""}
   `).join("\n---\n");
 
   const txt = `
-você passou anos lendo pessoas e livros. sabe que o que aparece numa semana de leituras raramente é coincidência — e às vezes é só curiosidade genuína, sem mais. leia com essa abertura.
+você passou anos lendo pessoas e livros. sabe que o que aparece numa semana de leituras raramente é coincidência, e às vezes é só curiosidade genuína, sem mais. leia com essa abertura.
 
 ${nomeTxt} ${pronomesTxt}
 
@@ -395,13 +407,13 @@ a pessoa fez ${rituais.length} rituais esta semana:
 
 ${resumo}
 
-responda com cinco campos — cada um com uma ideia só, bem dita. linguagem quente, lowercase, sem travessão, sem formalidade. voz de ana holanda, ana suy e vida simples combinadas.
+responda com cinco campos, cada um com uma ideia só, bem dita. linguagem quente, lowercase, sem travessão, sem formalidade. voz de ana holanda, ana suy e vida simples combinadas.
 
-"fio": o padrão ou tema que atravessou as leituras, identificado a partir do que foi realmente escrito. não invente padrões que não existem — se não houver um fio claro, diga isso com leveza. 2-3 frases. use "me parece que", "isso sugere que". sem travessão.
+"fio": o padrão ou tema que atravessou as leituras, identificado a partir do que foi realmente escrito. não invente padrões que não existem, se não houver um fio claro, diga isso com leveza. 2-3 frases. use "me parece que", "isso sugere que". sem travessão.
 
-"conexao": uma conexão específica entre dois ou mais rituais que provavelmente não foi percebida. concreta, baseada no que foi escrito. pode trazer um autor, conceito ou obra que conecta — mas só se for certeiro, não forçado. termine com "faz sentido pra você?". sem travessão.
+"conexao": uma conexão específica entre dois ou mais rituais que provavelmente não foi percebida. concreta, baseada no que foi escrito. pode trazer um autor, conceito ou obra que conecta, mas só se for certeiro, não forçado. termine com "faz sentido pra você?". sem travessão.
 
-"pergunta": uma única pergunta reflexiva, nascida directamente do que foi trazido esta semana. não genérica — deve ser a pergunta que só poderia ser feita a esta pessoa depois de ler tudo isso. sem travessão.
+"pergunta": uma única pergunta reflexiva, nascida directamente do que foi trazido esta semana. não genérica, deve ser a pergunta que só poderia ser feita a esta pessoa depois de ler tudo isso. sem travessão.
 
 "conceitos": identifique 4-6 conceitos-chave que emergiram dos rituais desta semana. para cada conceito, prepare uma ficha com: definição simples (1-2 frases, sem jargão), como apareceu especificamente nestes rituais, a tensão entre o que diferentes tradições diriam sobre ele, e uma sugestão (livro, filme ou obra de arte). retorne como array de objetos: [{"tag": "nome do conceito", "definicao": "...", "apareceu": "...", "tensao": "...", "sugestao": "..."}]
 
@@ -431,7 +443,7 @@ retorne APENAS json válido, sem markdown:
   try { return JSON.parse(raw.replace(/```json|```/g, "").trim()); } catch { return null; }
 }
 
-// ── API call — resumo mensal ──────────────────────────────
+// ── API call, resumo mensal ──────────────────────────────
 async function gerarResumoMensal(rituais, mes, perfil) {
   const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   if (!apiKey) return null;
@@ -462,7 +474,7 @@ responda com um resumo mensal em cinco campos:
 
 "temas": os 2-3 temas que mais apareceram ao longo do mês, identificados a partir do que foi realmente escrito. concreto, específico, baseado nas reflexões reais. não invente padrões que não existem. sem travessão.
 
-"crescendo": algo que apareceu mais de uma vez — uma preocupação, um desejo, uma pergunta que parece estar amadurecendo. observação gentil, sem diagnose. use "me parece que". sem travessão.
+"crescendo": algo que apareceu mais de uma vez, uma preocupação, um desejo, uma pergunta que parece estar amadurecendo. observação gentil, sem diagnose. use "me parece que". sem travessão.
 
 "aprofundar": uma sugestão por categoria, específica e nascida do que foi trazido no mês:
 - para ler: 1 livro ou autor certeiro
@@ -568,7 +580,7 @@ export default function App() {
     return diff <= 7;
   });
 
-  // resumo mensal — rituais do mês passado
+  // resumo mensal, rituais do mês passado
   const mesPassado = new Date();
   mesPassado.setMonth(mesPassado.getMonth() - 1);
   const mesPassadoKey = getMesKey(mesPassado);
@@ -741,7 +753,7 @@ function Home({ streak, entries, setView, setSelected, nomeDisplay, mostrarRefle
       <button onClick={() => setView("biblioteca")} style={{ width: "100%", padding: "14px 20px", background: "transparent", border: `1px solid ${C.border}`, borderRadius: "6px", cursor: "pointer", color: C.mutedHi, fontSize: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "36px" }}
         onMouseEnter={e => e.currentTarget.style.borderColor = C.borderHi}
         onMouseLeave={e => e.currentTarget.style.borderColor = C.border}>
-        <span>o que já li</span><span style={{ color: C.muted }}>→</span>
+        <span>repertório</span><span style={{ color: C.muted }}>→</span>
       </button>
 
       {recent.length > 0 && (
@@ -770,7 +782,7 @@ function Home({ streak, entries, setView, setSelected, nomeDisplay, mostrarRefle
           <p style={{ fontSize: "13px", color: C.muted, lineHeight: 1.8, fontStyle: "italic" }}>
             "cada livro que você leu deixou alguma coisa.<br />este espaço é pra descobrir o quê."
           </p>
-          <p style={{ fontSize: "11px", color: C.goldDim, marginTop: "8px" }}>— the reading cure</p>
+          <p style={{ fontSize: "11px", color: C.goldDim, marginTop: "8px" }}>, the reading cure</p>
         </div>
       )}
     </div>
@@ -840,7 +852,7 @@ function Ritual({ onSave, setView, perfil }) {
 
   if (step === 0) return (
     <Screen title="por onde começamos?" subtitle="o ritual" onBack={() => setView("home")}>
-      <p style={{ fontSize: "13px", color: C.muted, marginBottom: "20px", lineHeight: 1.7 }}>pode ser um livro, filme, podcast, vídeo — ou simplesmente uma ideia que ficou.</p>
+      <p style={{ fontSize: "13px", color: C.muted, marginBottom: "20px", lineHeight: 1.7 }}>pode ser um livro, filme, podcast, vídeo, ou simplesmente uma ideia que ficou.</p>
 
       <Field label="o que você quer trazer?">
         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "4px" }}>
@@ -882,11 +894,16 @@ function Ritual({ onSave, setView, perfil }) {
     return (
       <Screen title={k} subtitle={`movimento 0${step} de 03`} onBack={() => setStep(s => s-1)} progress={step/3}>
         <p style={{ fontSize: "11px", color: C.muted, marginBottom: "12px" }}>{descs[step-1]}</p>
-        <div style={{ background: `${C.gold}11`, border: `1px solid ${C.gold}22`, borderRadius: "4px", padding: "14px 16px", marginBottom: "20px" }}>
+        <div style={{ background: `${C.gold}11`, border: `1px solid ${C.gold}22`, borderRadius: "4px", padding: "14px 16px", marginBottom: "16px" }}>
           <p style={{ fontSize: "14px", color: C.text, margin: 0, lineHeight: 1.7, fontStyle: "italic" }}>{prompts[k]}</p>
         </div>
+        <p style={{ fontSize: "12px", color: C.goldDim, marginBottom: "12px", fontStyle: "italic" }}>
+          {step === 1 && "pode ser uma palavra, uma frase solta, uma sensação. não precisa fazer sentido."}
+          {step === 2 && "não tem resposta certa. o que vier primeiro costuma ser o mais verdadeiro."}
+          {step === 3 && "pequeno conta. não precisa ser uma transformação de vida."}
+        </p>
         <textarea ref={taRef} value={answers[k]} onChange={e => setAnswers(a => ({ ...a, [k]: e.target.value }))}
-          placeholder="sem pressa. não tem resposta certa."
+          placeholder="escreve aqui. pode ser bagunçado."
           rows={5} style={{ ...inputStyle(), resize: "vertical", lineHeight: 1.8 }} />
         <p style={{ fontSize: "11px", color: C.muted, margin: "8px 0 24px" }}>{answers[k]?.length || 0} caracteres</p>
         <Btn onClick={next} disabled={!canNext()}>{step < 3 ? "próximo →" : "gerar síntese →"}</Btn>
@@ -917,7 +934,7 @@ function Ritual({ onSave, setView, perfil }) {
       {result?.expansao  && <ResultBlock label="repertório" color={C.goldDim}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{result.expansao}</p></ResultBlock>}
       {result?.convite   && <ResultBlock label="conhecimento na prática" color={C.success}><p style={{ fontSize: "14px", color: C.cream, lineHeight: 1.7, margin: 0 }}>{result.convite}</p></ResultBlock>}
       {result?.cuidado   && <div style={{ background: `${C.blush}11`, border: `1px solid ${C.blush}33`, borderRadius: "6px", padding: "16px 18px", marginBottom: "14px" }}><p style={{ fontSize: "12px", color: C.mutedHi, lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>{result.cuidado}</p></div>}
-      {result?.modo === "local" && <p style={{ fontSize: "10px", color: C.muted, textAlign: "center", marginTop: "4px", fontStyle: "italic" }}>síntese gerada localmente · versão beta</p>}
+
 
       <div style={{ marginTop: "28px", borderTop: `1px solid ${C.border}`, paddingTop: "20px", marginBottom: "20px" }}>
         <p style={{ fontSize: "10px", letterSpacing: "0.15em", color: C.muted, textTransform: "uppercase", marginBottom: "14px" }}>suas reflexões</p>
@@ -1059,7 +1076,7 @@ function Biblioteca({ entries, setView, setSelected }) {
     [e.livro, e.autor, e.ancora].some(v => v?.toLowerCase().includes(search.toLowerCase()))
   );
   return (
-    <Screen title="o que já li" subtitle={`${entries.length} rituais`} onBack={() => setView("home")}>
+    <Screen title="repertório" subtitle={`${entries.length} ${entries.length === 1 ? "entrada" : "entradas"}`} onBack={() => setView("home")}>
       {entries.length === 0 ? (
         <div style={{ textAlign: "center", padding: "48px 0" }}>
           <p style={{ fontSize: "14px", color: C.muted, fontStyle: "italic" }}>sua biblioteca está esperando o primeiro livro.</p>
@@ -1068,7 +1085,7 @@ function Biblioteca({ entries, setView, setSelected }) {
       ) : (
         <>
           <input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="buscar por livro, autor ou frase..."
+            placeholder="buscar no repertório..."
             style={{ ...inputStyle(), marginBottom: "20px" }} />
           {filtered.map((e, i) => (
             <div key={i} onClick={() => { setSelected(e); setView("entrada"); }}
@@ -1123,7 +1140,7 @@ function EntradaDetalhe({ entry, setView }) {
 
 
 // ══════════════════════════════════════════════════════════
-// MAPA DE CONCEITOS — TAGS A3
+// MAPA DE CONCEITOS, TAGS A3
 // ══════════════════════════════════════════════════════════
 function MapaConceitos({ conceitos }) {
   const [aberto, setAberto] = useState(null);

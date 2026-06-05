@@ -164,7 +164,7 @@ function getPronomes(pronomes) {
 }
 
 // ── síntese local (sem API) ───────────────────────────────
-function gerarSinteseLocal(answers, livro, tipo) {
+function gerarSinteseLocal(answers, livro, tipo, lang) {
   const tudo = `${answers.capturar} ${answers.conectar} ${answers.converter}`.toLowerCase();
   const temas = {
     burnout:     /burnout|cansaço|exaust|esgot|sobrecarga|descanso|parar/.test(tudo),
@@ -271,7 +271,7 @@ function gerarSinteseLocal(answers, livro, tipo) {
 }
 
 // ── API call, ritual ─────────────────────────────────────
-async function callClaudeAPI(answers, livro, autor, tipo, perfil) {
+async function callClaudeAPI(answers, livro, autor, tipo, perfil, lang) {
   const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   const nomeTxt = perfil?.nome ? `a pessoa se chama ${perfil.nome}.` : "";
   const pronomesTxt = perfil?.pronomes && perfil.pronomes !== "prefiro não dizer"
@@ -316,7 +316,7 @@ o que ficou: ${answers.capturar}
 onde isso aparece na vida: ${answers.conectar}
 o que quer fazer com isso: ${answers.converter}
 
-note: adapte a linguagem ao tipo de conteúdo. se for filme, use "assistiu" e "cena" em vez de "leu" e "página". se for podcast ou vídeo, use "ouviu" ou "viu". se for uma ideia, "pensou sobre" ou "trouxe". se for livro, use "leu". isso torna a resposta mais natural e conectada com a experiência real da pessoa.
+note: responda SEMPRE em ${lang === "en" ? "english" : "português brasileiro"}. adapte a linguagem ao tipo de conteúdo. se for filme, use "assistiu" e "cena" em vez de "leu" e "página". se for podcast ou vídeo, use "ouviu" ou "viu". se for uma ideia, "pensou sobre" ou "trouxe". se for livro, use "leu". isso torna a resposta mais natural e conectada com a experiência real da pessoa.
 
 cinco campos, cada um com uma ideia só, bem dita:
 
@@ -368,7 +368,7 @@ retorne APENAS json válido, sem markdown:
   return { ...JSON.parse(raw.replace(/```json|```/g, "").trim()), modo: "api" };
 }
 
-async function gerarSintese(answers, livro, autor, tipo, perfil) {
+async function gerarSintese(answers, livro, autor, tipo, perfil, lang) {
   const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   if (apiKey) {
     try {
@@ -377,11 +377,11 @@ async function gerarSintese(answers, livro, autor, tipo, perfil) {
     } catch (e) { console.error('API call failed:', e?.message); }
   }
   await new Promise(r => setTimeout(r, 1800));
-  return gerarSinteseLocal(answers, livro, tipo);
+  return gerarSinteseLocal(answers, livro, tipo, lang || "pt");
 }
 
 // ── API call, reflexão semanal ───────────────────────────
-async function gerarReflexaoSemanal(rituais, perfil) {
+async function gerarReflexaoSemanal(rituais, perfil, lang) {
   const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   if (!apiKey) return null;
 
@@ -398,10 +398,11 @@ o que quer fazer: ${r.converter || ""}
 frase essencial: ${r.ancora || ""}
   `).join("\n---\n");
 
+  const langInstS = lang === "en" ? "respond in english. warm, direct, thoughtful." : "responda em português brasileiro. voz quente, lowercase.";
   const txt = `
-você passou anos lendo pessoas e livros. sabe que o que aparece numa semana de leituras raramente é coincidência, e às vezes é só curiosidade genuína, sem mais. leia com essa abertura.
+${langInstS} ${nomeTxt} ${pronomesTxt} sem travessão.
 
-${nomeTxt} ${pronomesTxt}
+você passou anos lendo pessoas. sabe que o que aparece numa semana raramente é coincidência.
 
 a pessoa fez ${rituais.length} rituais esta semana:
 
@@ -444,7 +445,7 @@ retorne APENAS json válido, sem markdown:
 }
 
 // ── API call, resumo mensal ──────────────────────────────
-async function gerarResumoMensal(rituais, mes, perfil) {
+async function gerarResumoMensal(rituais, mes, perfil, lang) {
   const apiKey = import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_ANTHROPIC_KEY;
   if (!apiKey) return null;
 
@@ -461,12 +462,11 @@ o que quer fazer: ${r.converter || ""}
 frase essencial: ${r.ancora || ""}
   `).join("\n---\n");
 
+  const langInstM = lang === "en" ? "respond in english. warm, direct voice." : "responda em português brasileiro. voz quente, lowercase.";
   const txt = `
-você é uma companheira de leitura. sua voz combina ana holanda, ana suy e a revista vida simples. quente, direta, sem performance, sem travessão.
+${langInstM} ${nomeTxt} ${pronomesTxt}. sem travessão.
 
-${nomeTxt} ${pronomesTxt}
-
-a pessoa fez ${rituais.length} rituais de leitura em ${mes}. aqui estão todas as reflexões:
+a pessoa fez ${rituais.length} rituais em ${mes}:
 
 ${resumo}
 
@@ -539,6 +539,157 @@ function loadPerfil() {
 function savePerfil(p) {
   try { localStorage.setItem("dlav_perfil", JSON.stringify(p)); } catch {}
 }
+function loadLang() { try { return localStorage.getItem("dlav_lang") || "pt"; } catch { return "pt"; } }
+function saveLang(l) { try { localStorage.setItem("dlav_lang", l); } catch {} }
+
+// ── translations ──────────────────────────────────────────
+const UI = {
+  pt: {
+    startLabel: "iniciar", startRitual: "ritual de leitura",
+    repertoire: "repertório", lastRitual: {ui.lastRitual},
+    ritualsDone: {ui.ritualsDone},
+    weeklyNew: "novo", weeklyReady: {ui.weeklyReady},
+    monthlyLabel: "resumo do mês", monthlyReady: (m) => `seu ${m} em reflexões está pronto`,
+    back: "voltar", backToStart: "voltar ao início",
+    typeQuestion: "o que você quer trazer?", titleLabel: "título",
+    generate: "gerar síntese →", next: "próximo →", save: "guardar e ir ✓",
+    essential: "o essencial", entrelinhas: "entrelinhas", reperLabel: "repertório",
+    practice: "conhecimento na prática", yourReflections: "suas reflexões",
+    resonated: "essa síntese ressoou com você?",
+    feedbackMeh: "obrigada por dizer. isso ajuda a melhorar.",
+    feedbackOk: "fico feliz que algo ficou.",
+    feedbackGreat: "que bom. isso é exatamente o que queremos.",
+    journalTitle: "se quiseres continuar...",
+    journalSub: "perguntas para o caderno ou uma conversa",
+    searchPlaceholder: "buscar no repertório...",
+    emptyRepo: "seu repertório está esperando a primeira entrada.",
+    startFirst: "começar agora →",
+    streakMsg: (n) => n === 0 ? "seu ritual começa hoje." : n === 1 ? "primeiro passo dado. isso é tudo que importa." : n < 7 ? `${n} dias construindo uma prática real.` : "uma semana inteira. o hábito está se formando.",
+    milestones: { 1: "primeiro ritual. bem-vinda.", 3: "três rituais. o hábito está a começar.", 7: "uma semana de prática. isso não é pouco.", 10: "dez rituais. já tens um arquivo vivo do teu pensamento.", 21: "21 rituais. a neurociência diz que é aqui que o hábito se instala.", 50: "cinquenta rituais. isso é uma prática real." },
+    streakBroken: "voltaste. isso é o que importa.",
+    encourage: ["pode ser uma palavra, uma frase solta, uma sensação. não precisa fazer sentido.", "não tem resposta certa. o que vier primeiro costuma ser o mais verdadeiro.", "pequeno conta. não precisa ser uma transformação de vida."],
+    placeholder: "escreve aqui. pode ser bagunçado.",
+    chars: "caracteres",
+    movements: ["capturar", "conectar", "converter"],
+    movOf: "movimento", movOf3: "de 03",
+    loadingMsgs: ["deixa eu pensar no que você trouxe...", "lendo nas entrelinhas...", "tem algo aqui que vale guardar.", "um momento só...", "pensando com cuidado...", "a gente volta já.", "cada escolha deixa uma marca. vamos encontrar a sua.", "quase lá..."],
+    weekTitle: "sua semana em reflexões", weekWhat: "o que passou por aqui",
+    weekThread: "o fio que atravessou tudo", weekConnection: "uma conexão que apareceu",
+    weekConcepts: "conceitos da semana", weekQuestion: "uma pergunta pra levar",
+    monthWhat: "conteúdos do mês", monthThemes: "os temas do mês",
+    monthGrowing: "o que está crescendo", monthDeeper: "para ir mais além",
+    monthConcepts: "conceitos do mês", monthQuestion: "a pergunta do mês",
+    conceptWhat: "o que é", conceptAppeared: "como apareceu nas suas reflexões",
+    conceptTension: "a conversa que existe", conceptDeeper: "para ir mais além", conceptClose: "fechar ↑",
+    loadingWeek: "olhando pra sua semana inteira...", loadingMonth: "olhando pro seu mês inteiro...",
+    weekFallback: (n) => `você fez ${n} rituais essa semana. o que você está tentando entender?`,
+    monthFallback: (n) => `você fez ${n} rituais esse mês. isso já é muito.`,
+    langLabel: "idioma",
+    onboardLangQ: "em que língua preferes usar o app?",
+    onboardLangs: ["🇧🇷 português", "🇬🇧 english"],
+    onboardSkip: "pular por agora",
+    movementDescs: (tipo) => [
+      `o que ficou depois que você terminou ${tipo==="filme"?"o filme":tipo==="podcast"?"o podcast":tipo==="video"?"o vídeo":tipo==="ideia"?"essa ideia":"o livro"}`,
+      "onde essa ideia vive na sua vida agora",
+      "o que você vai fazer com isso essa semana",
+    ],
+    subtitleRitual: (tipo) => `sua voz ${tipo==="filme"?"nesse filme":tipo==="podcast"?"nesse podcast":tipo==="video"?"nesse vídeo":tipo==="ideia"?"nessa ideia":"nessa leitura"}`,
+    tipos: [
+      {id:"livro",label:"📖 livro",placeholder:"ex: a sociedade do cansaço",autorLabel:"autor (opcional)",autorPlaceholder:"ex: byung-chul han"},
+      {id:"filme",label:"🎬 filme",placeholder:"ex: boyhood",autorLabel:"diretor (opcional)",autorPlaceholder:"ex: richard linklater"},
+      {id:"podcast",label:"🎙️ podcast",placeholder:"ex: huberman lab",autorLabel:"episódio ou host (opcional)",autorPlaceholder:"ex: ep. sobre sono"},
+      {id:"video",label:"▶️ vídeo",placeholder:"ex: palestra de brené brown",autorLabel:"canal ou autor (opcional)",autorPlaceholder:"ex: ted talks"},
+      {id:"ideia",label:"💡 uma ideia",placeholder:"ex: sobre o valor do silêncio",autorLabel:"origem (opcional)",autorPlaceholder:"ex: conversa com uma amiga"},
+    ],
+  },
+  en: {
+    startLabel: "start", startRitual: "reading ritual",
+    repertoire: "library", lastRitual: "last ritual",
+    ritualsDone: "rituals done",
+    weeklyNew: "new", weeklyReady: "your weekly reflection is ready",
+    monthlyLabel: "monthly review", monthlyReady: (m) => `your ${m} review is ready`,
+    back: "back", backToStart: "back to home",
+    typeQuestion: "what are you bringing?", titleLabel: "title",
+    generate: "generate synthesis →", next: "next →", save: "save and go ✓",
+    essential: "the essential", entrelinhas: "between the lines", reperLabel: "expand",
+    practice: "knowledge in practice", yourReflections: "your reflections",
+    resonated: "did this synthesis resonate?",
+    feedbackMeh: "thank you for saying so. it helps us improve.",
+    feedbackOk: "glad something landed.",
+    feedbackGreat: "wonderful. that's exactly what we're here for.",
+    journalTitle: "if you want to keep going...",
+    journalSub: "questions for your journal or a conversation",
+    searchPlaceholder: "search your library...",
+    emptyRepo: "your library is waiting for the first entry.",
+    startFirst: "start now →",
+    streakMsg: (n) => n === 0 ? "your ritual starts today." : n === 1 ? "first step taken. that's everything." : n < 7 ? `${n} days building a real practice.` : "a full week. the habit is forming.",
+    milestones: { 1: "first ritual. welcome.", 3: "three rituals. the habit is starting.", 7: "one week of practice. that's not nothing.", 10: "ten rituals. you already have a living archive of your thinking.", 21: "21 rituals. neuroscience says this is where habits truly install.", 50: "fifty rituals. this is a real practice." },
+    streakBroken: "you came back. that's what matters.",
+    encourage: ["one word, a loose thought, a feeling. it doesn't have to make sense.", "there's no right answer. what comes first is usually what's most true.", "small counts. it doesn't have to be a life transformation."],
+    placeholder: "write here. messy is fine.",
+    chars: "characters",
+    movements: ["capture", "connect", "convert"],
+    movOf: "movement", movOf3: "of 03",
+    loadingMsgs: ["let me sit with what you shared...", "reading between the lines...", "there's something worth keeping here.", "just a moment...", "thinking carefully...", "every choice leaves a mark. let's find yours.", "almost there..."],
+    weekTitle: "your week in reflections", weekWhat: "what came through",
+    weekThread: "the thread that ran through it all", weekConnection: "a connection that emerged",
+    weekConcepts: "concepts of the week", weekQuestion: "a question to carry",
+    monthWhat: "content this month", monthThemes: "themes of the month",
+    monthGrowing: "what's growing", monthDeeper: "go deeper",
+    monthConcepts: "concepts of the month", monthQuestion: "the question of the month",
+    conceptWhat: "what it is", conceptAppeared: "how it appeared in your rituals",
+    conceptTension: "the conversation that exists", conceptDeeper: "go further", conceptClose: "close ↑",
+    loadingWeek: "looking at your whole week...", loadingMonth: "looking at your whole month...",
+    weekFallback: (n) => `you did ${n} rituals this week. what are you trying to understand?`,
+    monthFallback: (n) => `you did ${n} rituals this month. that's already a lot.`,
+    langLabel: "language",
+    onboardLangQ: "which language would you like to use?",
+    onboardLangs: ["🇧🇷 português", "🇬🇧 english"],
+    onboardSkip: "skip for now",
+    movementDescs: (tipo) => [
+      `what stayed after you finished ${tipo==="filme"?"the film":tipo==="podcast"?"the podcast":tipo==="video"?"the video":tipo==="ideia"?"that idea":"the book"}`,
+      "where does this idea live in your life right now",
+      "what will you do with this in the next week",
+    ],
+    subtitleRitual: (tipo) => `your voice on ${tipo==="filme"?"this film":tipo==="podcast"?"this podcast":tipo==="video"?"this video":tipo==="ideia"?"this idea":"this read"}`,
+    tipos: [
+      {id:"livro",label:"📖 book",placeholder:"e.g. the courage to be disliked",autorLabel:"author (optional)",autorPlaceholder:"e.g. ichiro kishimi"},
+      {id:"filme",label:"🎬 film",placeholder:"e.g. boyhood",autorLabel:"director (optional)",autorPlaceholder:"e.g. richard linklater"},
+      {id:"podcast",label:"🎙️ podcast",placeholder:"e.g. on being",autorLabel:"episode or host (optional)",autorPlaceholder:"e.g. ep. on grief"},
+      {id:"video",label:"▶️ video",placeholder:"e.g. brené brown ted talk",autorLabel:"channel or author (optional)",autorPlaceholder:"e.g. ted talks"},
+      {id:"ideia",label:"💡 an idea",placeholder:"e.g. on the value of silence",autorLabel:"source (optional)",autorPlaceholder:"e.g. conversation with a friend"},
+    ],
+  },
+};
+
+// ── EN prompts by tipo ────────────────────────────────────
+const PROMPTS_EN = {
+  livro: {
+    capturar: ["what phrase stayed in your head even after you closed the book?","if this book were a conversation, what would it be saying to you?","what surprised you, something that contradicted what you already thought?","which idea did you go back and read more than once?","what kept nagging at you in a good way?"],
+    conectar: ["where in your life is this happening right now?","if this book were a mirror, what would it be showing?","does this resonate with something you already know but don't yet act on?","where do you feel this, in relationships, at work, in yourself?","did anyone come to mind while you were reading? why?"],
+    converter: ["if you were going to do one thing with all of this, what would it be?","what's the smallest possible gesture that would already change something?","what would change if you took this idea seriously for a week?","what do you want to remember from this a month from now?","if this book gave you permission for something, what would it be?"],
+  },
+  filme: {
+    capturar: ["what scene stayed in your head even after the lights came on?","if this film were a conversation, what would it be saying to you?","what surprised you, something you didn't expect to see?","which character or moment are you still sitting with?","what kept nagging at you in a good way?"],
+    conectar: ["where in your life is this happening right now?","if this film were a mirror, what would it be showing?","did any character remind you of someone, or of yourself?","where do you feel this, in relationships, at work, in yourself?","is there something in this film you'd want to show someone specific? why?"],
+    converter: ["if you were going to take one thing from this film into your life?","what's the smallest possible gesture that comes from what you saw?","what would change if you took this idea seriously for a week?","what do you want to remember from this film a month from now?","if this film gave you permission for something, what would it be?"],
+  },
+  podcast: {
+    capturar: ["which idea from this episode are you still digesting?","if this podcast were a conversation, what would it be saying?","what surprised you, something that contradicted what you thought?","which moment made you pause, even without knowing why?","what kept echoing after you took out your earphones?"],
+    conectar: ["where in your life is this happening right now?","if this episode were a mirror, what would it be showing?","does this resonate with something you already know but don't act on?","where do you feel this, in relationships, at work, in yourself?","is there someone who needs to hear this episode? why?"],
+    converter: ["if you were going to do one thing with what you heard?","what's the smallest possible gesture from what you heard?","what would change if you took this seriously for a week?","what do you want to remember from this episode?","if this podcast gave you permission for something, what would it be?"],
+  },
+  video: {
+    capturar: ["which idea from this video are you still digesting?","if this video were a conversation, what would it be saying?","what surprised you?","which moment did you replay, even without knowing why?","what kept nagging at you in a good way?"],
+    conectar: ["where in your life is this happening right now?","if this video were a mirror, what would it be showing?","does this resonate with something you already know?","where do you feel this?","did anyone come to mind while you were watching? why?"],
+    converter: ["if you were going to do one thing with what you saw?","what's the smallest possible gesture?","what would change if you took this seriously for a week?","what do you want to remember?","if this video gave you permission for something, what would it be?"],
+  },
+  ideia: {
+    capturar: ["where did this idea come from, and why did it stay?","if this idea were a question, what would it be?","what in this idea contradicted something you already thought?","which part are you still trying to understand?","what is this idea nagging at you about in a good way?"],
+    conectar: ["where in your life is this idea showing up right now?","if this idea were a mirror, what would it be showing?","does this resonate with something you haven't named yet?","where do you feel this idea?","is there someone you'd want to share this with? why?"],
+    converter: ["if you were going to do one thing with this idea?","what's the smallest possible gesture?","what would change if you took this seriously for a week?","what do you want to remember?","if this idea gave you permission for something, what would it be?"],
+  },
+};
 
 // ══════════════════════════════════════════════════════════
 export default function App() {
@@ -546,20 +697,17 @@ export default function App() {
   const [entries, setEntries] = useState(() => loadEntries());
   const [selected, setSelected] = useState(null);
   const [perfil, setPerfil]   = useState(() => loadPerfil());
-  const [mesResumo, setMesResumo] = useState(null);
+  const [lang, setLang]       = useState(() => loadLang());
 
   useEffect(() => {
     if (loadOnboarded()) setView("home");
     else setView("onboarding");
   }, []);
 
-  const addEntry = (e) => {
-    const next = [e, ...entries];
-    setEntries(next);
-    saveEntries(next);
-  };
-
+  const ui = UI[lang] || UI.pt;
+  const addEntry = (e) => { const next = [e, ...entries]; setEntries(next); saveEntries(next); };
   const savePer = (p) => { setPerfil(p); savePerfil(p); };
+  const changeLang = (l) => { setLang(l); saveLang(l); };
 
   const streak = (() => {
     if (!entries.length) return 0;
@@ -587,19 +735,19 @@ export default function App() {
   const rituaisMesPassado = entries.filter(e => e.date?.slice(0, 7) === mesPassadoKey);
   const mostrarResumoMensal = rituaisMesPassado.length >= 2;
   const mostrarReflexaoSemanal = rituaisEssaSemana.length >= 3;
-
   const nomeDisplay = perfil?.nome ? `, ${perfil.nome}` : "";
+  const milestone = ui.milestones[entries.length];
 
   return (
     <div style={{ background: C.bg, minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", color: C.text, WebkitFontSmoothing: "antialiased" }}>
       {view === "loading"       && <div style={{ minHeight: "100vh" }} />}
-      {view === "onboarding"    && <Onboarding onComplete={(p) => { savePer(p); saveOnboarded(); setView("home"); }} />}
-      {view === "home"          && <Home streak={streak} entries={entries} setView={setView} setSelected={setSelected} nomeDisplay={nomeDisplay} mostrarReflexaoSemanal={mostrarReflexaoSemanal} rituaisEssaSemana={rituaisEssaSemana} mostrarResumoMensal={mostrarResumoMensal} rituaisMesPassado={rituaisMesPassado} mesPassado={mesPassado} setMesResumo={setMesResumo} />}
-      {view === "ritual"        && <Ritual onSave={addEntry} setView={setView} perfil={perfil} />}
-      {view === "biblioteca"    && <Biblioteca entries={entries} setView={setView} setSelected={setSelected} />}
-      {view === "entrada"       && <EntradaDetalhe entry={selected} setView={setView} />}
-      {view === "semanal"       && <ReflexaoSemanal rituais={rituaisEssaSemana} setView={setView} perfil={perfil} />}
-      {view === "mensal"        && <ResumoMensal rituais={rituaisMesPassado} mes={getMesNome(mesPassado)} setView={setView} perfil={perfil} />}
+      {view === "onboarding"    && <Onboarding ui={ui} lang={lang} onComplete={(p, l) => { savePer(p); if(l) changeLang(l); saveOnboarded(); setView("home"); }} />}
+      {view === "home"          && <Home ui={ui} lang={lang} streak={streak} entries={entries} setView={setView} setSelected={setSelected} nomeDisplay={nomeDisplay} mostrarReflexaoSemanal={mostrarReflexaoSemanal} rituaisEssaSemana={rituaisEssaSemana} mostrarResumoMensal={mostrarResumoMensal} rituaisMesPassado={rituaisMesPassado} mesPassado={mesPassado} milestone={milestone} />}
+      {view === "ritual"        && <Ritual ui={ui} lang={lang} onSave={addEntry} setView={setView} perfil={perfil} totalEntries={entries.length} />}
+      {view === "biblioteca"    && <Biblioteca ui={ui} lang={lang} entries={entries} setView={setView} setSelected={setSelected} />}
+      {view === "entrada"       && <EntradaDetalhe ui={ui} lang={lang} entry={selected} setView={setView} />}
+      {view === "semanal"       && <ReflexaoSemanal ui={ui} lang={lang} rituais={rituaisEssaSemana} setView={setView} perfil={perfil} />}
+      {view === "mensal"        && <ResumoMensal ui={ui} lang={lang} rituais={rituaisMesPassado} mes={getMesNome(mesPassado)} setView={setView} perfil={perfil} />}
     </div>
   );
 }
@@ -607,10 +755,12 @@ export default function App() {
 // ══════════════════════════════════════════════════════════
 // ONBOARDING
 // ══════════════════════════════════════════════════════════
-function Onboarding({ onComplete }) {
+function Onboarding({ ui, lang: initLang, onComplete }) {
   const [step, setStep]     = useState(0);
   const [nome, setNome]     = useState("");
   const [pronomes, setPronomes] = useState("");
+  const [selLang, setSelLang] = useState(initLang || "pt");
+  const uiO = UI[selLang] || UI.pt;
 
   const telas = [
     {
@@ -641,7 +791,7 @@ function Onboarding({ onComplete }) {
 
   return (
     <div style={{ maxWidth: "520px", margin: "0 auto", padding: "80px 32px", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-      <p style={{ fontSize: "10px", letterSpacing: "0.25em", color: C.goldDim, textTransform: "uppercase", margin: "0 0 20px" }}>the reading cure</p>
+      <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "22px", fontWeight: 400, fontStyle: "italic", color: C.gold, margin: "0 0 20px", letterSpacing: "0.05em" }}>lumière</p>
       <h1 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "36px", fontWeight: 300, color: C.cream, margin: "0 0 28px", lineHeight: 1.1 }}>{t.titulo}</h1>
 
       {!t.temInput && (
@@ -654,7 +804,13 @@ function Onboarding({ onComplete }) {
 
       {t.temInput && (
         <div style={{ marginBottom: "36px" }}>
-          <p style={{ fontSize: "14px", color: C.text, lineHeight: 1.7, marginBottom: "20px" }}>como prefere ser chamado aqui? (opcional)</p>
+          <p style={{ fontSize: "13px", color: C.muted, marginBottom: "10px" }}>{uiO.onboardLangQ}</p>
+          <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
+            {["pt","en"].map((l, i) => (
+              <button key={l} onClick={() => setSelLang(l)} style={{ flex: 1, padding: "10px 16px", borderRadius: "4px", cursor: "pointer", fontSize: "13px", background: selLang===l ? `${C.gold}22` : C.surface, border: `1px solid ${selLang===l ? C.gold : C.border}`, color: selLang===l ? C.gold : C.mutedHi, transition: "all 0.2s" }}>{(UI[selLang]||UI.pt).onboardLangs[i]}</button>
+            ))}
+          </div>
+          <p style={{ fontSize: "14px", color: C.text, lineHeight: 1.7, marginBottom: "20px" }}>{uiO.bodies?.[3] || "como prefere ser chamado aqui? (opcional)"}</p>
           <input
             value={nome}
             onChange={e => setNome(e.target.value)}
@@ -683,15 +839,15 @@ function Onboarding({ onComplete }) {
       </div>
 
       <Btn onClick={() => {
-        if (isUltimo) onComplete({ nome: nome.trim() || null, pronomes: pronomes || null });
+        if (isUltimo) onComplete({ nome: nome.trim() || null, pronomes: pronomes || null }, selLang);
         else setStep(s => s + 1);
       }}>
         {t.botao}
       </Btn>
 
       {isUltimo && (
-        <button onClick={() => onComplete({ nome: null, pronomes: null })} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: "12px", marginTop: "16px", textAlign: "center" }}>
-          pular por agora
+        <button onClick={() => onComplete({ nome: null, pronomes: null }, selLang)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: "12px", marginTop: "16px", textAlign: "center" }}>
+          {uiO.onboardSkip}
         </button>
       )}
     </div>
@@ -701,15 +857,13 @@ function Onboarding({ onComplete }) {
 // ══════════════════════════════════════════════════════════
 // HOME
 // ══════════════════════════════════════════════════════════
-function Home({ streak, entries, setView, setSelected, nomeDisplay, mostrarReflexaoSemanal, rituaisEssaSemana, mostrarResumoMensal, rituaisMesPassado, mesPassado, setMesResumo }) {
+function Home({ ui, lang, streak, entries, setView, setSelected, nomeDisplay, mostrarReflexaoSemanal, rituaisEssaSemana, mostrarResumoMensal, rituaisMesPassado, mesPassado, milestone }) {
   const recent = entries.slice(0, 1);
   return (
     <div style={{ maxWidth: "520px", margin: "0 auto", padding: "48px 24px 80px" }}>
       <div style={{ marginBottom: "48px" }}>
-        <p style={{ fontSize: "10px", letterSpacing: "0.25em", color: C.goldDim, textTransform: "uppercase", margin: "0 0 6px" }}>the reading cure</p>
-        <h1 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "32px", fontWeight: 300, color: C.cream, margin: 0, lineHeight: 1.1 }}>
-          do livro<br /><em style={{ color: C.gold }}>à vida</em>
-        </h1>
+        <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "26px", fontWeight: 400, fontStyle: "italic", color: C.gold, margin: "0 0 4px", letterSpacing: "0.03em" }}>lumière</p>
+        <p style={{ fontSize: "12px", color: C.muted, letterSpacing: "0.15em", margin: 0 }}>do consumo à clareza</p>
       </div>
 
       <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: "6px", padding: "20px 24px", marginBottom: "28px", display: "flex", alignItems: "center", gap: "20px" }}>
@@ -719,12 +873,9 @@ function Home({ streak, entries, setView, setSelected, nomeDisplay, mostrarRefle
         </div>
         <div style={{ flex: 1, paddingLeft: "20px", borderLeft: `1px solid ${C.border}` }}>
           <p style={{ fontSize: "13px", color: C.text, margin: "0 0 4px", lineHeight: 1.5 }}>
-            {streak === 0 && `seu ritual começa hoje${nomeDisplay}.`}
-            {streak === 1 && "primeiro passo dado. isso é tudo que importa."}
-            {streak >= 2 && streak < 7 && `${streak} dias construindo uma prática real.`}
-            {streak >= 7 && "uma semana inteira. o hábito está se formando."}
+            {ui.streakMsg(streak)}{streak === 0 && nomeDisplay}
           </p>
-          <p style={{ fontSize: "11px", color: C.muted, margin: 0 }}>{entries.length} {entries.length === 1 ? "entrada" : "entradas"} na biblioteca</p>
+          <p style={{ fontSize: "11px", color: C.muted, margin: 0 }}>{entries.length} {lang === "en" ? (entries.length === 1 ? "entry" : "entries") : (entries.length === 1 ? "entrada" : "entradas")}</p>
         </div>
       </div>
 
@@ -735,6 +886,12 @@ function Home({ streak, entries, setView, setSelected, nomeDisplay, mostrarRefle
         </span>
         <span style={{ fontSize: "18px", color: C.gold }}>→</span>
       </Btn>
+
+      {milestone && (
+        <div style={{ background: `${C.success}18`, border: `1px solid ${C.success}44`, borderRadius: "6px", padding: "14px 18px", marginBottom: "12px" }}>
+          <p style={{ fontSize: "13px", color: C.success, margin: 0 }}>✦ {milestone}</p>
+        </div>
+      )}
 
       {mostrarResumoMensal && (
         <div onClick={() => setView("mensal")} style={{ background: `${C.blush}18`, border: `1px solid ${C.blush}55`, borderRadius: "6px", padding: "16px 20px", marginBottom: "12px", cursor: "pointer" }}>
@@ -782,7 +939,7 @@ function Home({ streak, entries, setView, setSelected, nomeDisplay, mostrarRefle
           <p style={{ fontSize: "13px", color: C.muted, lineHeight: 1.8, fontStyle: "italic" }}>
             "cada livro que você leu deixou alguma coisa.<br />este espaço é pra descobrir o quê."
           </p>
-          <p style={{ fontSize: "11px", color: C.goldDim, marginTop: "8px" }}>, the reading cure</p>
+          <p style={{ fontSize: "11px", color: C.goldDim, marginTop: "8px" }}>— lumière</p>
         </div>
       )}
     </div>
@@ -792,32 +949,29 @@ function Home({ streak, entries, setView, setSelected, nomeDisplay, mostrarRefle
 // ══════════════════════════════════════════════════════════
 // RITUAL
 // ══════════════════════════════════════════════════════════
-function Ritual({ onSave, setView, perfil }) {
+function Ritual({ ui, lang, onSave, setView, perfil, totalEntries }) {
   const [step, setStep]         = useState(0);
   const [livro, setLivro]       = useState("");
   const [autor, setAutor]       = useState("");
   const [tipo, setTipo]         = useState("livro");
   const [answers, setAnswers]   = useState({ capturar: "", conectar: "", converter: "" });
   const [prompts]               = useState(() => {
-    const p = getPrompts(tipo);
-    return {
-      capturar: randomPick(p.capturar),
-      conectar: randomPick(p.conectar),
-      converter: randomPick(p.converter),
-    };
+    const pool = lang === "en" ? (PROMPTS_EN[tipo] || PROMPTS_EN.livro) : (PROMPTS[tipo] || PROMPTS.livro);
+    return { capturar: randomPick(pool.capturar), conectar: randomPick(pool.conectar), converter: randomPick(pool.converter) };
   });
   const [result, setResult]     = useState(null);
   const [error, setError]       = useState("");
-  const [loadingMsg]            = useState(randomPick(LOADING_MSGS));
+  const [loadingMsg]            = useState(randomPick(ui.loadingMsgs || LOADING_MSGS));
   const [feedback, setFeedback] = useState(null);
+  const [celebrating, setCelebrating] = useState(false);
+  const [showJournal, setShowJournal] = useState(false);
   const taRef = useRef();
 
   useEffect(() => { taRef.current?.focus(); }, [step]);
 
   const keys  = ["capturar","conectar","converter"];
-  const tipoLabel = tipo === "filme" ? "o filme" : tipo === "podcast" ? "o podcast" : tipo === "video" ? "o vídeo" : tipo === "ideia" ? "essa ideia" : "o livro";
-  const descs = [
-    `o que ficou depois que você terminou ${tipoLabel}`,
+  const movDescs = ui.movementDescs ? ui.movementDescs(tipo) : [
+    `o que ficou depois que você terminou ${tipo==="filme"?"o filme":tipo==="podcast"?"o podcast":tipo==="video"?"o vídeo":tipo==="ideia"?"essa ideia":"o livro"}`,
     "onde essa ideia vive na sua vida agora",
     "o que você vai fazer com isso essa semana",
   ];
@@ -831,13 +985,14 @@ function Ritual({ onSave, setView, perfil }) {
     if (step < 3) { setStep(s => s + 1); return; }
     setStep(4);
     try {
-      const r = await gerarSintese(answers, livro, autor, tipo, perfil);
+      const r = await gerarSintese(answers, livro, autor, tipo, perfil, lang);
       setResult(r);
       setStep(5);
-      onSave({ livro, autor, tipo, ...answers, ancora: r.ancora, espelho: r.espelho, expansao: r.expansao, convite: r.convite, cuidado: r.cuidado, date: new Date().toISOString() });
+      const newTotal = totalEntries + 1;
+      if ([1,3,7,10,21,50].includes(newTotal)) setCelebrating(true);
+      onSave({ livro, autor, tipo, lang, ...answers, ancora: r.ancora, espelho: r.espelho, expansao: r.expansao, convite: r.convite, cuidado: r.cuidado, journaling: r.journaling, date: new Date().toISOString() });
     } catch {
-      setError("algo deu errado. suas reflexões foram salvas.");
-      onSave({ livro, autor, tipo, ...answers, date: new Date().toISOString() });
+      onSave({ livro, autor, tipo, lang, ...answers, date: new Date().toISOString() });
       setStep(5);
     }
   };
@@ -893,7 +1048,7 @@ function Ritual({ onSave, setView, perfil }) {
     const k = keys[step-1];
     return (
       <Screen title={k} subtitle={`movimento 0${step} de 03`} onBack={() => setStep(s => s-1)} progress={step/3}>
-        <p style={{ fontSize: "11px", color: C.muted, marginBottom: "12px" }}>{descs[step-1]}</p>
+        <p style={{ fontSize: "11px", color: C.muted, marginBottom: "12px" }}>{movDescs[step-1]}</p>
         <div style={{ background: `${C.gold}11`, border: `1px solid ${C.gold}22`, borderRadius: "4px", padding: "14px 16px", marginBottom: "16px" }}>
           <p style={{ fontSize: "14px", color: C.text, margin: 0, lineHeight: 1.7, fontStyle: "italic" }}>{prompts[k]}</p>
         </div>
@@ -935,12 +1090,37 @@ function Ritual({ onSave, setView, perfil }) {
       {result?.convite   && <ResultBlock label="conhecimento na prática" color={C.success}><p style={{ fontSize: "14px", color: C.cream, lineHeight: 1.7, margin: 0 }}>{result.convite}</p></ResultBlock>}
       {result?.cuidado   && <div style={{ background: `${C.blush}11`, border: `1px solid ${C.blush}33`, borderRadius: "6px", padding: "16px 18px", marginBottom: "14px" }}><p style={{ fontSize: "12px", color: C.mutedHi, lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>{result.cuidado}</p></div>}
 
+      {result?.journaling?.length > 0 && (
+        <div style={{ marginBottom: "16px" }}>
+          <button onClick={() => setShowJournal(!showJournal)} style={{ width: "100%", padding: "12px 18px", background: C.surface, border: `1px solid ${C.border}`, borderRadius: "6px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", color: C.mutedHi, fontSize: "13px" }}>
+            <span>{ui.journalTitle || "se quiseres continuar..."}</span>
+            <span>{showJournal ? "↑" : "+"}</span>
+          </button>
+          {showJournal && (
+            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: "none", borderRadius: "0 0 6px 6px", padding: "16px 18px" }}>
+              <p style={{ fontSize: "11px", color: C.muted, marginBottom: "12px" }}>{ui.journalSub || "perguntas para o caderno ou uma conversa"}</p>
+              {result.journaling.map((q, i) => (
+                <div key={i} style={{ marginBottom: "10px", paddingLeft: "12px", borderLeft: `2px solid ${C.gold}44` }}>
+                  <p style={{ fontSize: "13px", color: C.text, lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>{q}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {celebrating && (
+        <div style={{ background: `${C.success}18`, border: `1px solid ${C.success}44`, borderRadius: "6px", padding: "14px 18px", marginBottom: "16px" }}>
+          <p style={{ fontSize: "13px", color: C.success, margin: 0 }}>✦ {ui.milestones?.[totalEntries + 1] || ""}</p>
+        </div>
+      )}
+
 
       <div style={{ marginTop: "28px", borderTop: `1px solid ${C.border}`, paddingTop: "20px", marginBottom: "20px" }}>
         <p style={{ fontSize: "10px", letterSpacing: "0.15em", color: C.muted, textTransform: "uppercase", marginBottom: "14px" }}>suas reflexões</p>
-        {keys.map((k, i) => (
+        {["capturar","conectar","converter"].map((k, i) => (
           <div key={k} style={{ marginBottom: "14px" }}>
-            <p style={{ fontSize: "10px", color: C.goldDim, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "4px" }}>0{i+1} {k}</p>
+            <p style={{ fontSize: "10px", color: C.goldDim, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "4px" }}>0{i+1} {ui.movements?.[i] || k}</p>
             <p style={{ fontSize: "12px", color: C.mutedHi, lineHeight: 1.7, margin: 0 }}>{answers[k]}</p>
           </div>
         ))}
@@ -966,7 +1146,7 @@ function Ritual({ onSave, setView, perfil }) {
           </p>
         )}
       </div>
-      <Btn onClick={() => setView("home")}>guardar e ir ✓</Btn>
+      <Btn onClick={() => setView("home")}>{ui.save || "guardar e ir ✓"}</Btn>
     </Screen>
   );
 }
@@ -974,14 +1154,14 @@ function Ritual({ onSave, setView, perfil }) {
 // ══════════════════════════════════════════════════════════
 // REFLEXÃO SEMANAL
 // ══════════════════════════════════════════════════════════
-function ReflexaoSemanal({ rituais, setView, perfil }) {
+function ReflexaoSemanal({ ui, lang, rituais, setView, perfil }) {
   const [reflexao, setReflexao] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const livros = rituais.map(r => r.livro).join(", ");
   const ancoras = rituais.filter(r => r.ancora).map(r => `"${r.ancora}"`);
 
   useEffect(() => {
-    gerarReflexaoSemanal(rituais, perfil).then(r => { setReflexao(r); setCarregando(false); });
+    gerarReflexaoSemanal(rituais, perfil, lang).then(r => { setReflexao(r); setCarregando(false); });
   }, []);
 
   if (carregando) return (
@@ -989,13 +1169,13 @@ function ReflexaoSemanal({ rituais, setView, perfil }) {
       <div style={{ textAlign: "center", padding: "60px 0" }}>
         <div style={{ width: "44px", height: "44px", borderRadius: "50%", border: `2px solid ${C.gold}44`, borderTopColor: C.gold, margin: "0 auto 24px", animation: "spin 1s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        <p style={{ fontSize: "15px", color: C.text, fontStyle: "italic" }}>olhando pra sua semana inteira...</p>
+        <p style={{ fontSize: "15px", color: C.text, fontStyle: "italic" }}>{ui.loadingWeek || "olhando pra sua semana inteira..."}</p>
       </div>
     </Screen>
   );
 
   return (
-    <Screen title="sua semana em leituras" subtitle={`${rituais.length} rituais`} onBack={() => setView("home")}>
+    <Screen title={ui.weekTitle || "sua semana em reflexões"} subtitle={`${rituais.length} rituais`} onBack={() => setView("home")}>
       <div style={{ background: `${C.gold}11`, border: `1px solid ${C.gold}33`, borderRadius: "6px", padding: "20px", marginBottom: "20px" }}>
         <p style={{ fontSize: "10px", letterSpacing: "0.15em", color: C.goldDim, textTransform: "uppercase", marginBottom: "10px" }}>o que passou por aqui</p>
         <p style={{ fontSize: "13px", color: C.text, lineHeight: 1.7, margin: "0 0 12px" }}>{livros}</p>
@@ -1007,14 +1187,14 @@ function ReflexaoSemanal({ rituais, setView, perfil }) {
       </div>
       {reflexao ? (
         <>
-          <ResultBlock label="o fio que atravessou tudo" color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{reflexao.fio}</p></ResultBlock>
-          <ResultBlock label="uma conexão que apareceu" color={C.goldDim}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{reflexao.conexao}</p></ResultBlock>
-          {reflexao.conceitos && <MapaConceitos conceitos={reflexao.conceitos} />}
-          <ResultBlock label="uma pergunta pra levar" color={C.success}><p style={{ fontSize: "15px", color: C.cream, lineHeight: 1.7, margin: 0, fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic" }}>{reflexao.pergunta}</p></ResultBlock>
+          <ResultBlock label={ui.weekThread || "o fio que atravessou tudo"} color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{reflexao.fio}</p></ResultBlock>
+          <ResultBlock label={ui.weekConnection || "uma conexão que apareceu"} color={C.goldDim}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{reflexao.conexao}</p></ResultBlock>
+          {reflexao.conceitos && <MapaConceitos conceitos={reflexao.conceitos} ui={ui} />}
+          <ResultBlock label={ui.weekQuestion || "uma pergunta pra levar"} color={C.success}><p style={{ fontSize: "15px", color: C.cream, lineHeight: 1.7, margin: 0, fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic" }}>{reflexao.pergunta}</p></ResultBlock>
           <div style={{ textAlign: "center", padding: "16px 0" }}><p style={{ fontSize: "12px", color: C.muted, fontStyle: "italic", lineHeight: 1.8 }}>{reflexao.fechamento}</p></div>
         </>
       ) : (
-        <ResultBlock label="esta semana" color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>você leu {rituais.length} livros essa semana. o que você está tentando entender?</p></ResultBlock>
+        <ResultBlock label="esta semana" color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{ui.weekFallback ? ui.weekFallback(rituais.length) : `você fez ${rituais.length} rituais essa semana.`}</p></ResultBlock>
       )}
       <Btn onClick={() => setView("home")}>voltar</Btn>
     </Screen>
@@ -1024,13 +1204,13 @@ function ReflexaoSemanal({ rituais, setView, perfil }) {
 // ══════════════════════════════════════════════════════════
 // RESUMO MENSAL
 // ══════════════════════════════════════════════════════════
-function ResumoMensal({ rituais, mes, setView, perfil }) {
+function ResumoMensal({ ui, lang, rituais, mes, setView, perfil }) {
   const [resumo, setResumo]     = useState(null);
   const [carregando, setCarregando] = useState(true);
   const livros = [...new Set(rituais.map(r => r.livro))].join(", ");
 
   useEffect(() => {
-    gerarResumoMensal(rituais, mes, perfil).then(r => { setResumo(r); setCarregando(false); });
+    gerarResumoMensal(rituais, mes, perfil, lang).then(r => { setResumo(r); setCarregando(false); });
   }, []);
 
   if (carregando) return (
@@ -1038,7 +1218,7 @@ function ResumoMensal({ rituais, mes, setView, perfil }) {
       <div style={{ textAlign: "center", padding: "60px 0" }}>
         <div style={{ width: "44px", height: "44px", borderRadius: "50%", border: `2px solid ${C.blush}44`, borderTopColor: C.blush, margin: "0 auto 24px", animation: "spin 1s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        <p style={{ fontSize: "15px", color: C.text, fontStyle: "italic" }}>olhando pro seu mês inteiro...</p>
+        <p style={{ fontSize: "15px", color: C.text, fontStyle: "italic" }}>{ui.loadingMonth || "olhando pro seu mês inteiro..."}</p>
       </div>
     </Screen>
   );
@@ -1052,15 +1232,15 @@ function ResumoMensal({ rituais, mes, setView, perfil }) {
 
       {resumo ? (
         <>
-          <ResultBlock label="os temas do mês" color={C.gold}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{resumo.temas}</p></ResultBlock>
-          <ResultBlock label="o que está crescendo" color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{resumo.crescendo}</p></ResultBlock>
-          <ResultBlock label="para ir mais além" color={C.goldDim}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{resumo.aprofundar}</p></ResultBlock>
-          {resumo.conceitos && <MapaConceitos conceitos={resumo.conceitos} />}
-          <ResultBlock label="a pergunta do mês" color={C.success}><p style={{ fontSize: "16px", color: C.cream, lineHeight: 1.7, margin: 0, fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic" }}>{resumo.pergunta}</p></ResultBlock>
+          <ResultBlock label={ui.monthThemes || "os temas do mês"} color={C.gold}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{resumo.temas}</p></ResultBlock>
+          <ResultBlock label={ui.monthGrowing || "o que está crescendo"} color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{resumo.crescendo}</p></ResultBlock>
+          <ResultBlock label={ui.monthDeeper || "para ir mais além"} color={C.goldDim}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{resumo.aprofundar}</p></ResultBlock>
+          {resumo.conceitos && <MapaConceitos conceitos={resumo.conceitos} ui={ui} />}
+          <ResultBlock label={ui.monthQuestion || "a pergunta do mês"} color={C.success}><p style={{ fontSize: "16px", color: C.cream, lineHeight: 1.7, margin: 0, fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic" }}>{resumo.pergunta}</p></ResultBlock>
           <div style={{ textAlign: "center", padding: "16px 0" }}><p style={{ fontSize: "12px", color: C.muted, fontStyle: "italic", lineHeight: 1.8 }}>{resumo.fechamento}</p></div>
         </>
       ) : (
-        <ResultBlock label="este mês" color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>você fez {rituais.length} rituais esse mês. isso já é muito.</p></ResultBlock>
+        <ResultBlock label="este mês" color={C.blush}><p style={{ fontSize: "13px", color: C.text, lineHeight: 1.8, margin: 0 }}>{ui.monthFallback ? ui.monthFallback(rituais.length) : `você fez ${rituais.length} rituais esse mês.`}</p></ResultBlock>
       )}
       <Btn onClick={() => setView("home")}>voltar</Btn>
     </Screen>
@@ -1070,7 +1250,7 @@ function ResumoMensal({ rituais, mes, setView, perfil }) {
 // ══════════════════════════════════════════════════════════
 // BIBLIOTECA
 // ══════════════════════════════════════════════════════════
-function Biblioteca({ entries, setView, setSelected }) {
+function Biblioteca({ ui, lang, entries, setView, setSelected }) {
   const [search, setSearch] = useState("");
   const filtered = entries.filter(e =>
     [e.livro, e.autor, e.ancora].some(v => v?.toLowerCase().includes(search.toLowerCase()))
@@ -1111,7 +1291,7 @@ function Biblioteca({ entries, setView, setSelected }) {
 // ══════════════════════════════════════════════════════════
 // ENTRADA DETALHE
 // ══════════════════════════════════════════════════════════
-function EntradaDetalhe({ entry, setView }) {
+function EntradaDetalhe({ ui, lang, entry, setView }) {
   if (!entry) return null;
   return (
     <Screen title={entry.livro} subtitle={entry.autor || fmt(entry.date)} onBack={() => setView("biblioteca")}>
@@ -1142,13 +1322,13 @@ function EntradaDetalhe({ entry, setView }) {
 // ══════════════════════════════════════════════════════════
 // MAPA DE CONCEITOS, TAGS A3
 // ══════════════════════════════════════════════════════════
-function MapaConceitos({ conceitos }) {
+function MapaConceitos({ conceitos, ui }) {
   const [aberto, setAberto] = useState(null);
   if (!conceitos || conceitos.length === 0) return null;
 
   return (
     <div style={{ marginBottom: "20px" }}>
-      <p style={{ fontSize: "10px", letterSpacing: "0.15em", color: C.goldDim, textTransform: "uppercase", marginBottom: "12px" }}>conceitos da semana</p>
+      <p style={{ fontSize: "10px", letterSpacing: "0.15em", color: C.goldDim, textTransform: "uppercase", marginBottom: "12px" }}>{ui?.weekConcepts || "conceitos"}</p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
         {conceitos.map((c, i) => (
           <button key={i} onClick={() => setAberto(aberto === i ? null : i)} style={{
@@ -1177,25 +1357,25 @@ function MapaConceitos({ conceitos }) {
           </p>
 
           <div style={{ marginBottom: "12px" }}>
-            <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "6px" }}>o que é</p>
+            <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "6px" }}>{ui?.conceptWhat || "o que é"}</p>
             <p style={{ fontSize: "13px", color: C.text, lineHeight: 1.7, margin: 0 }}>{conceitos[aberto].definicao}</p>
           </div>
 
           <div style={{ marginBottom: "12px" }}>
-            <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "6px" }}>como apareceu nos seus rituais</p>
+            <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "6px" }}>{ui?.conceptAppeared || "como apareceu nos seus rituais"}</p>
             <p style={{ fontSize: "13px", color: C.text, lineHeight: 1.7, margin: 0 }}>{conceitos[aberto].apareceu}</p>
           </div>
 
           {conceitos[aberto].tensao && (
             <div style={{ marginBottom: "12px" }}>
-              <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "6px" }}>a conversa que existe</p>
+              <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "6px" }}>{ui?.conceptTension || "a conversa que existe"}</p>
               <p style={{ fontSize: "13px", color: C.text, lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>{conceitos[aberto].tensao}</p>
             </div>
           )}
 
           {conceitos[aberto].sugestao && (
             <div style={{ background: `${C.gold}11`, borderRadius: "4px", padding: "10px 14px" }}>
-              <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "4px" }}>para ir mais além</p>
+              <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: C.goldDim, textTransform: "uppercase", marginBottom: "4px" }}>{ui?.conceptDeeper || "para ir mais além"}</p>
               <p style={{ fontSize: "12px", color: C.text, lineHeight: 1.6, margin: 0 }}>{conceitos[aberto].sugestao}</p>
             </div>
           )}
@@ -1203,7 +1383,7 @@ function MapaConceitos({ conceitos }) {
           <button onClick={() => setAberto(null)} style={{
             background: "none", border: "none", color: C.muted,
             fontSize: "11px", cursor: "pointer", marginTop: "14px", padding: 0
-          }}>fechar ↑</button>
+          }}>{ui?.conceptClose || "fechar ↑"}</button>
         </div>
       )}
     </div>

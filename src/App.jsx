@@ -546,9 +546,9 @@ function saveLang(l) { try { localStorage.setItem("dlav_lang", l); } catch {} }
 const UI = {
   pt: {
     startLabel: "iniciar", startRitual: "ritual de leitura",
-    repertoire: "repertório", lastRitual: {ui.lastRitual},
-    ritualsDone: {ui.ritualsDone},
-    weeklyNew: "novo", weeklyReady: {ui.weeklyReady},
+    repertoire: "repertório", lastRitual: "último ritual",
+    ritualsDone: "rituais feitos",
+    weeklyNew: "novo", weeklyReady: "sua reflexão da semana está pronta",
     monthlyLabel: "resumo do mês", monthlyReady: (m) => `seu ${m} em reflexões está pronto`,
     back: "voltar", backToStart: "voltar ao início",
     typeQuestion: "o que você quer trazer?", titleLabel: "título",
